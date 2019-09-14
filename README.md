@@ -1,6 +1,6 @@
 # Redux Reuse Recycle
 
-Redux Reuse Recycle is a DSL that generates redux boilerplate code in a simple, easy to use syntax that allows front end developers to spend less time writing boilerplate and more time writting features.
+Redux Reuse Recycle is a DSL that generates redux boilerplate code in a simple, easy to use syntax that allows front end developers to spend less time writing boilerplate and more time writing features.
 
 ## Syntax
 
