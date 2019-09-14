@@ -1,0 +1,26 @@
+{
+  "name": "redux-reuse-recycle",
+  "version": "1.0.0",
+  "description": "A DSL to generate Redux boilerplate code.",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src",
+    "test": "mocha -r ts-node/register ./test/*"
+  },
+  "keywords": [
+    "redux",
+    "dsl",
+    "boilerplate"
+  ],
+  "author": "Gina Bolognesi, Jeffrey Doyle, Gregory Gzik, Brian Neumann, Jessica Yang",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.2.2",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "ts-node-register": "^1.0.0",
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {}
+}
