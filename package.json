@@ -4,7 +4,9 @@
   "description": "A DSL to generate Redux boilerplate code.",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src",
+    "start": "",
+    "build": "",
+    "dev": "ts-node src",
     "test": "mocha -r ts-node/register ./test/*"
   },
   "keywords": [
