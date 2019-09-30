@@ -9,7 +9,7 @@ import ReducerNode from "../src/codegen/ir/ReducerNode";
 import FileCreator from '../src/utils/FileCreator';
 
 describe("ReducerFileGenerator",  () => {
-    it("Produces the correct output for one action", () => {
+    it("Produces the correct output for a few reducers", () => {
         let node = new ReducerNode('USERS');
         node.addReducerVariable({
             name: 'hasUsersBeenFetched',
@@ -61,21 +61,40 @@ describe("ReducerFileGenerator",  () => {
         });
         let code = new ReducerFileGenerator(node).codeGen();
         FileCreator(code, './reducer.js');
-        // expect(code).to.equal('const GET_ALL_USERS = "GET_ALL_USERS";\n' +
-        //     'const OPEN_MODAL = "OPEN_MODAL";\n' +
-        //     'const SET_USER_LOGGED_IN = "SET_USER_LOGGED_IN";\n' +
-        //     '\n' +
-        //     'const getAllUsers = (payload) => ({\n' +
-        //     '\ttype: GET_ALL_USERS,\n' +
-        //     '\tpayload\n' +
-        //     '});\n' +
-        //     'const openModal = (payload) => ({\n' +
-        //     '\ttype: OPEN_MODAL,\n' +
-        //     '\tpayload\n' +
-        //     '});\n' +
-        //     'const setUserLoggedIn = (payload) => ({\n' +
-        //     '\ttype: SET_USER_LOGGED_IN,\n' +
-        //     '\tpayload\n' +
-        //     '});\n')
+        expect(code).to.equal('import {\n' +
+            '\tSET_USERS_BEEN_FETCHED,\n' +
+            '\tGET_ALL_USERS,\n' +
+            '\tDELETE_ALL_USERS,\n' +
+            '} from "./actions/users.js";\n' +
+            '\n' +
+            'const initialState = {\n' +
+            '\thasUsersBeenFetched: false,\n' +
+            '\tusers1: [],\n' +
+            '\tusers2: [],\n' +
+            '};\n' +
+            '\n' +
+            'export default function counterReducer(state = initialState, action = {}) {\n' +
+            '\tswitch(action.type) {\n' +
+            '\t\tcase SET_USERS_BEEN_FETCHED:\n' +
+            '\t\t\treturn{\n' +
+            '\t\t\t\t...state,\n' +
+            '\t\t\t\thasUsersBeenFetched: typeof action.payload === \'boolean\' ? action.payload : !state.hasUsersBeenFetched,\n' +
+            '\t\t\t};\n' +
+            '\t\tcase GET_ALL_USERS:\n' +
+            '\t\t\treturn{\n' +
+            '\t\t\t\t...state,\n' +
+            '\t\t\t\tusers1: action.payload || state.users1,\n' +
+            '\t\t\t\tusers2: action.payload || state.users2,\n' +
+            '\t\t\t};\n' +
+            '\t\tcase DELETE_ALL_USERS:\n' +
+            '\t\t\treturn{\n' +
+            '\t\t\t\t...state,\n' +
+            '\t\t\t\tusers1: action.payload || state.users1,\n' +
+            '\t\t\t\tusers2: action.payload || state.users2,\n' +
+            '\t\t\t};\n' +
+            '\t\tdefault:\n' +
+            '\t\t\treturn state;\n' +
+            '\t}\n' +
+            '}\n')
     });
 });
