@@ -3,12 +3,12 @@ import ActionInterface from '../interfaces/ActionInterface';
 import IRVisitor from "../../visitor/IRVisitor";
 
 class ActionsNode extends AbstractNode {
-    public fileName: string;
+    public name: string;
     public actions: ActionInterface[] = [];
 
-    constructor(fileName: string) {
+    constructor(name: string) {
         super();
-        this.fileName = fileName;
+        this.name = name;
     }
 
     public addAction(action: ActionInterface) {

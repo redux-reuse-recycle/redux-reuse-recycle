@@ -1,7 +1,7 @@
 import ActionInterface from './ActionInterface';
 
 interface ReducerVariableInterface {
-    name: string,
+    variableName: string,
     initialValue: string,
     modifiedBy: ActionInterface[];
 }

@@ -13,26 +13,26 @@ class ReducerFileGenerator extends AbstractFileGenerator {
 
     private generateActionImports(): string {
         let actionImports: string = "";
-        interface actionImportFilesInterface {[fileName: string]: string[]};
-        let actionImportFiles: actionImportFilesInterface = {};
+        interface actionImportNodesInterface {[actionNode: string]: string[]};
+        let actionImportNodes: actionImportNodesInterface = {};
         this.reducerNode.variables.forEach((variable: ReducerVariableInterface) => {
             variable.modifiedBy.forEach((action: ActionInterface) => {
-                if (actionImportFiles[action.fileName] && !actionImportFiles[action.fileName].includes(action.type)) {
-                    actionImportFiles[action.fileName].push(action.type);
-                } else if(!actionImportFiles[action.fileName]) {
-                    actionImportFiles[action.fileName] = [action.type];
+                if (actionImportNodes[action.actionNode] && !actionImportNodes[action.actionNode].includes(action.type)) {
+                    actionImportNodes[action.actionNode].push(action.type);
+                } else if(!actionImportNodes[action.actionNode]) {
+                    actionImportNodes[action.actionNode] = [action.type];
                 }
             });
         });
-        Object.keys(actionImportFiles).forEach((fileName: string) => {
-            if (actionImportFiles[fileName].length > 1) {
+        Object.keys(actionImportNodes).forEach((actionNode: string) => {
+            if (actionImportNodes[actionNode].length > 1) {
                 actionImports += `import {\n`;
-                actionImportFiles[fileName].forEach((action: string) => {
+                actionImportNodes[actionNode].forEach((action: string) => {
                     actionImports += `\t${action},\n`;
                 });
-                actionImports += `} from "${fileName}";\n`;
+                actionImports += `} from "../actions/${actionNode}.js";\n`;
             } else {
-                actionImports += `import { ${actionImportFiles[fileName][0]} } from "${fileName}";\n`
+                actionImports += `import { ${actionImportNodes[actionNode][0]} } from "../actions/${actionNode}.js";\n`
             }
         });
         return actionImports;
@@ -42,30 +42,31 @@ class ReducerFileGenerator extends AbstractFileGenerator {
         if (this.reducerNode.variables.length === 0) return "";
         let initialState: string = "const initialState = {\n";
         this.reducerNode.variables.forEach((variable: ReducerVariableInterface) => {
-            initialState += `\t${variable.name}: ${variable.initialValue},\n`;
+            initialState += `\t${variable.variableName}: ${variable.initialValue},\n`;
         });
         initialState += "};\n";
         return initialState;
     }
 
-    private modifyVariableByActionClass(name: string, actionClass: string): string {
+    private modifyVariableByActionClass(variableName: string, actionClass: string): string {
         switch(actionClass) {
             case 'network':
-                return `action.payload || state.${name}`;
+                return `action.payload || state.${variableName}`;
             case 'toggle':
-                return `typeof action.payload === 'boolean' ? action.payload : !state.${name}`;
+                return `typeof action.payload === 'boolean' ? action.payload : !state.${variableName}`;
             case 'counter':
-                return `typeof action.payload === 'number' ? action.payload : state.${name} + 1`;
+                return `typeof action.payload === 'number' ? action.payload : state.${variableName} + 1`;
             case 'stub':
+                return `state.${variableName}`;
             default:
-                return name;
+                return variableName;
         }
     }
 
     private generateReducer(): string {
         let reducer = `export default function counterReducer(state = initialState, action = {}) {\n`;
         reducer += "\tswitch(action.type) {\n";
-        interface actionVariableInterface { name: string; actionClass: string; };
+        interface actionVariableInterface { variableName: string; actionClass: string; };
         interface actionVariableMapInterface {[type: string]: actionVariableInterface[]};
         let actionVariableMap: actionVariableMapInterface = {};
 
@@ -73,12 +74,12 @@ class ReducerFileGenerator extends AbstractFileGenerator {
             variable.modifiedBy.forEach((action: ActionInterface) => {
                 if (actionVariableMap[action.type]) {
                     actionVariableMap[action.type].push({
-                        name: variable.name,
+                        variableName: variable.variableName,
                         actionClass: action.actionClass,
                     });
                 } else {
                     actionVariableMap[action.type] = [{
-                        name: variable.name,
+                        variableName: variable.variableName,
                         actionClass: action.actionClass,
                     }];
                 }
@@ -89,7 +90,7 @@ class ReducerFileGenerator extends AbstractFileGenerator {
             reducer += "\t\t\treturn{\n";
             reducer += "\t\t\t\t...state,\n";
             actionVariableMap[type].forEach((actionVariable: actionVariableInterface) => {
-                reducer += `\t\t\t\t${actionVariable.name}: ${this.modifyVariableByActionClass(actionVariable.name, actionVariable.actionClass)},\n`;
+                reducer += `\t\t\t\t${actionVariable.variableName}: ${this.modifyVariableByActionClass(actionVariable.variableName, actionVariable.actionClass)},\n`;
             });
             reducer += "\t\t\t};\n";
         });

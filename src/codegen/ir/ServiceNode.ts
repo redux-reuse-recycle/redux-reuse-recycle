@@ -3,12 +3,12 @@ import ServiceCaseInterface from "../interfaces/ServiceCaseInterface";
 import IRVisitor from "../../visitor/IRVisitor";
 
 class ServiceNode extends AbstractNode {
-    public fileName: string;
+    public name: string;
     public serviceCases: ServiceCaseInterface[] = [];
 
-    constructor(fileName: string) {
+    constructor(name: string) {
         super();
-        this.fileName = fileName;
+        this.name = name;
     }
 
     public addServiceCase(serviceCase: ServiceCaseInterface) {

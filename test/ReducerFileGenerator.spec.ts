@@ -10,51 +10,51 @@ import FileCreator from '../src/utils/FileCreator';
 
 describe("ReducerFileGenerator",  () => {
     it("Produces the correct output for a few reducers", () => {
-        let node = new ReducerNode('USERS');
+        let node = new ReducerNode('users');
         node.addReducerVariable({
-            name: 'hasUsersBeenFetched',
+            variableName: 'hasUsersBeenFetched',
             initialValue: 'false',
             modifiedBy: [
                 {
                     type: 'SET_USERS_BEEN_FETCHED',
                     actionClass: "toggle",
-                    fileName: './actions/users.js',
+                    actionNode: 'users',
                     hasPayload: true,
                 },
             ],
         });
         node.addReducerVariable({
-            name: 'users1',
+            variableName: 'users1',
             initialValue: '[]',
             modifiedBy: [
                 {
                     type: 'GET_ALL_USERS',
                     actionClass: "network",
-                    fileName: './actions/users.js',
+                    actionNode: 'users',
                     hasPayload: true,
                 },
                 {
                     type: 'DELETE_ALL_USERS',
                     actionClass: "network",
-                    fileName: './actions/users.js',
+                    actionNode: 'users',
                     hasPayload: true,
                 },
             ],
         });
         node.addReducerVariable({
-            name: 'users2',
+            variableName: 'users2',
             initialValue: '[]',
             modifiedBy: [
                 {
                     type: 'GET_ALL_USERS',
                     actionClass: "network",
-                    fileName: './actions/users.js',
+                    actionNode: 'users',
                     hasPayload: true,
                 },
                 {
                     type: 'DELETE_ALL_USERS',
                     actionClass: "network",
-                    fileName: './actions/users.js',
+                    actionNode: 'users',
                     hasPayload: true,
                 },
             ],

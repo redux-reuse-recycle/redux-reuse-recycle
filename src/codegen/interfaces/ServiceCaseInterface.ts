@@ -1,7 +1,7 @@
 interface ServiceCaseInterface {
-    name: string,
+    type: string,
+    url: string,
     method: string,
-    hasPayload: boolean,
 }
 
 export default ServiceCaseInterface;

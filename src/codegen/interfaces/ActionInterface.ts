@@ -1,7 +1,7 @@
 interface ActionInterface {
     type: string,
+    actionNode: string,
     actionClass: string,
-    fileName: string,
     hasPayload: boolean,
 }
 

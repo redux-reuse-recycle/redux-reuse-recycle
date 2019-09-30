@@ -3,12 +3,12 @@ import ReducerVariableInterface from "../interfaces/ReducerVariableInterface";
 import IRVisitor from "../../visitor/IRVisitor";
 
 class ReducerNode extends AbstractNode {
-    public fileName: string;
+    public name: string;
     public variables: ReducerVariableInterface[] = [];
 
-    constructor(fileName: string) {
+    constructor(name: string) {
         super();
-        this.fileName = fileName;
+        this.name = name;
     }
 
     public addReducerVariable(reducerVariable: ReducerVariableInterface) {

@@ -10,11 +10,12 @@ import FileCreator from '../src/utils/FileCreator';
 
 describe("ActionFileGenerator",  () => {
     it("Produces the correct output for three actions", () => {
-        let node = new ActionsNode('USERS');
-        node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
-        node.addAction({type: 'OPEN_MODAL', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
-        node.addAction({type: 'SET_USER_LOGGED_IN', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
+        let node = new ActionsNode('users');
+        node.addAction({type: 'GET_ALL_USERS', actionNode: 'users', actionClass: "network", hasPayload: false});
+        node.addAction({type: 'OPEN_MODAL', actionNode: 'users', actionClass: "toggle", hasPayload: false});
+        node.addAction({type: 'SET_USER_LOGGED_IN', actionNode: 'users', actionClass: "toggle", hasPayload: false});
         let code = new ActionFileGenerator(node).codeGen();
+        FileCreator(code, './actions.js')
         expect(code).to.equal('const GET_ALL_USERS = "GET_ALL_USERS";\n' +
             'const OPEN_MODAL = "OPEN_MODAL";\n' +
             'const SET_USER_LOGGED_IN = "SET_USER_LOGGED_IN";\n' +
@@ -34,8 +35,8 @@ describe("ActionFileGenerator",  () => {
     })
 
     it("Produces the correct output for one actions", () => {
-        let node = new ActionsNode('USERS');
-        node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
+        let node = new ActionsNode('users');
+        node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", actionNode: 'users', hasPayload: false});
         let code = new ActionFileGenerator(node).codeGen();
         expect(code).to.equal('const GET_ALL_USERS = "GET_ALL_USERS";\n' +
             '\n' +
