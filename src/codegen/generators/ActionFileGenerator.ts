@@ -52,9 +52,9 @@ class ActionFileGenerator extends AbstractFileGenerator {
     private generateActionCreators(): string {
         let functions: string = '';
         this.actionNode.actions.forEach((action: ActionInterface) => {
-            if (action.actionClass === "network") {
+            if (action.actionClass === "network" ) {
                 functions += `const ${this.formatFunctionName(action.type)} = (payload) => {\n`;
-                functions += `\tconst request = ${action.actionClass}Service.${this.formatFunctionName(action.type)}();\n\n`;
+                functions += `\tconst request = ${action.actionClass}Service.${this.formatFunctionName(action.type)}(payload);\n\n`;
                 functions += `\treturn (dispatch) => {\n`;
                 functions += `\t\tdispatch({ type: "${action.type}_REQUEST" });\n\n`;
                 functions += `\t\trequest.then((payload) => dispatch({\n`;

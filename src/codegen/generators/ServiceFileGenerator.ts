@@ -33,11 +33,11 @@ class ServiceFileGenerator extends AbstractFileGenerator {
             services += `export const ${this.formatFunctionName(serviceCase.type)} = (${hasBody ? 'payload' : ''}) => {\n`;
             services += `\tconst url = "${serviceCase.url}";\n\n`;
             services += `\tconst request = {\n`;
-            services += `\t\turl,\n`;
-            services += `\t\tmethod: ${serviceCase.method},\n`;
-            if (hasBody) services += `\t\tbody: payload,\n`;
+            services += `\t\tmethod: "${serviceCase.method}",\n`;
+            if (hasBody) services += `\t\theaders: { 'Content-Type': 'application/json' },\n`;
+            if (hasBody) services += `\t\tbody: JSON.stringify(payload),\n`;
             services += `\t};\n\n`;
-            services += `\treturn fetch(request);\n`;
+            services += `\treturn fetch(url, request);\n`;
             services += `};\n\n`;
         });
         return services;
