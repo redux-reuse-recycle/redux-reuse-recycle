@@ -37,8 +37,6 @@ class ActionFileGenerator extends AbstractFileGenerator {
     private generateActionCreators(): string {
         let functions: string = '';
 
-        console.log('generateActionCreators');
-
         this.actionNode.actions.forEach((action: ActionInterface) => {
             functions += `const ${this.formatFunctionName(action.type)} = (payload) => ({\n` +
                     `\ttype: ${action.type},\n` + '\tpayload\n' + '});\n';
