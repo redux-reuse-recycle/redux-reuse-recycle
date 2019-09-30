@@ -127,7 +127,7 @@ class ReducerFileGenerator extends AbstractFileGenerator {
         });
         Object.keys(actionVariableMap).forEach((type: string) => {
             reducer += `\t\tcase ${type}:\n`;
-            reducer += "\t\t\treturn{\n";
+            reducer += "\t\t\treturn {\n";
             reducer += "\t\t\t\t...state,\n";
             actionVariableMap[type].forEach((actionVariable: actionVariableInterface) => {
                 reducer += `\t\t\t\t${actionVariable.variableName}: ${this.modifyVariableByActionClass(actionVariable.variableName, actionVariable.actionClass)},\n`;
