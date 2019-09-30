@@ -55,7 +55,7 @@ describe("ActionFileGenerator",  () => {
         let node = new ActionsNode('users');
         node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", actionNode: 'users', hasPayload: false});
         let code = new ActionFileGenerator(node).codeGen();
-        FileCreator(code, './actions.js');
+        // FileCreator(code, './actions.js');
         expect(code).to.equal('\n' +
             'const GET_ALL_USERS = "GET_ALL_USERS";\n' +
             '\n' +
