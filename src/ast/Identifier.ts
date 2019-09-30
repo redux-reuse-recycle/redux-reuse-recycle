@@ -1,6 +1,6 @@
-import ASTNode from "./ASTNode";
+import Value from "./Value";
 
-export default class Identifier extends ASTNode {
+export default class Identifier extends Value {
   public readonly name: string;
 
   constructor(name: string) {
