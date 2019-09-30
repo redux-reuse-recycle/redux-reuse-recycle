@@ -1,5 +1,5 @@
 import ASTNode from "./ASTNode";
-import Type from "./Type";
+import Type from "./type/Type";
 import Identifier from "./Identifier";
 import Value from "./Value";
 
