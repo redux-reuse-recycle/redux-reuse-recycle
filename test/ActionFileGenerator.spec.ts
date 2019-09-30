@@ -11,9 +11,9 @@ import FileCreator from '../src/utils/FileCreator';
 describe("ActionFileGenerator",  () => {
     it("Produces the correct output for three actions", () => {
         let node = new ActionsNode('USERS');
-        node.addAction({type: 'GET_ALL_USERS', hasPayload: false});
-        node.addAction({type: 'OPEN_MODAL', hasPayload: false});
-        node.addAction({type: 'SET_USER_LOGGED_IN', hasPayload: false});
+        node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
+        node.addAction({type: 'OPEN_MODAL', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
+        node.addAction({type: 'SET_USER_LOGGED_IN', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
         let code = new ActionFileGenerator(node).codeGen();
         expect(code).to.equal('const GET_ALL_USERS = "GET_ALL_USERS";\n' +
             'const OPEN_MODAL = "OPEN_MODAL";\n' +
@@ -35,7 +35,7 @@ describe("ActionFileGenerator",  () => {
 
     it("Produces the correct output for one actions", () => {
         let node = new ActionsNode('USERS');
-        node.addAction({type: 'GET_ALL_USERS', hasPayload: false});
+        node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", fileName: './actions/users.js', hasPayload: false});
         let code = new ActionFileGenerator(node).codeGen();
         expect(code).to.equal('const GET_ALL_USERS = "GET_ALL_USERS";\n' +
             '\n' +

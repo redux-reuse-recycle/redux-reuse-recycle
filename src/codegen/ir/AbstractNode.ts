@@ -1,7 +1,7 @@
 import IRVisitor from "../../visitor/IRVisitor";
 
 abstract class AbstractNode {
-    abstract name: string;
+    abstract fileName: string;
     public abstract acceptVisitor(visitor: IRVisitor): any;
 }
 

@@ -1,7 +1,9 @@
-interface ServiceCaseInterface {
+import ActionInterface from './ActionInterface';
+
+interface ReducerVariableInterface {
     name: string,
-    method: string,
-    hasPayload: boolean,
+    initialValue: string,
+    modifiedBy: ActionInterface[];
 }
 
-export default ServiceCaseInterface;
+export default ReducerVariableInterface;

@@ -1,15 +1,14 @@
 import AbstractNode from './AbstractNode';
 import ServiceCaseInterface from "../interfaces/ServiceCaseInterface";
-import ServiceFileGenerator from '../generators/ServiceFileGenerator';
 import IRVisitor from "../../visitor/IRVisitor";
 
 class ServiceNode extends AbstractNode {
-    public name: string;
+    public fileName: string;
     public serviceCases: ServiceCaseInterface[] = [];
 
-    constructor(name: string) {
+    constructor(fileName: string) {
         super();
-        this.name = name;
+        this.fileName = fileName;
     }
 
     public addServiceCase(serviceCase: ServiceCaseInterface) {

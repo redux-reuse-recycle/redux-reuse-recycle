@@ -12,14 +12,11 @@ class ActionFileGenerator extends AbstractFileGenerator {
 
     private generateConstants(): string {
         let constants: string = '';
-
         this.actionNode.actions.forEach((action: ActionInterface) => {
             constants += `const ${action.type} = "${action.type}";\n`;
         });
-
         return constants;
     }
-
 
     private formatFunctionName(actionType: string): string {
         let functionName: string = "";
@@ -36,12 +33,10 @@ class ActionFileGenerator extends AbstractFileGenerator {
 
     private generateActionCreators(): string {
         let functions: string = '';
-
         this.actionNode.actions.forEach((action: ActionInterface) => {
             functions += `const ${this.formatFunctionName(action.type)} = (payload) => ({\n` +
                     `\ttype: ${action.type},\n` + '\tpayload\n' + '});\n';
         });
-
         return functions;
     }
 
