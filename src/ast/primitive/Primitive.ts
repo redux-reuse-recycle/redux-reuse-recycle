@@ -1,10 +1,19 @@
 import Value from "../Value";
+import ASTVisitor from "../../visitor/ASTVisitor";
+import PrimitiveVisitor from "../../visitor/primitive/PrimitiveVisitor";
 
 export default abstract class Primitive extends Value {
-  public readonly value: any;
+    public readonly value: any;
 
-  constructor(value: any) {
-    super();
-    this.value = value;
-  }
+    protected constructor(value: any) {
+        super();
+        this.value = value;
+    }
+
+    acceptASTVisitor(visitor: ASTVisitor): any {
+        return visitor.visitPrimitive(this);
+    }
+
+    abstract acceptPrimitiveVisitor(visitor: PrimitiveVisitor): any;
+
 }

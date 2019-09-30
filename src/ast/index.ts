@@ -6,7 +6,7 @@ export { default as Identifier } from "./Identifier";
 export { default as ImportStatement } from "./ImportStatement";
 export { default as Modifier } from "./Modifier";
 export { default as Parameter } from "./Parameter";
-export { default as ProgramFile } from "./Program";
+export { default as ProgramFile } from "./ProgramFile";
 export { default as Value } from "./Value";
 export { default as Class } from "./class/Class";
 export { default as CounterClass } from "./class/CounterClass";
