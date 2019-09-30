@@ -18,9 +18,23 @@ class ReducerFileGenerator extends AbstractFileGenerator {
         this.reducerNode.variables.forEach((variable: ReducerVariableInterface) => {
             variable.modifiedBy.forEach((action: ActionInterface) => {
                 if (actionImportNodes[action.actionNode] && !actionImportNodes[action.actionNode].includes(action.type)) {
-                    actionImportNodes[action.actionNode].push(action.type);
+                    if (action.actionClass === 'network') {
+                        if (!actionImportNodes[action.actionNode].includes(action.type + "_REQUEST")) actionImportNodes[action.actionNode].push(action.type + "_REQUEST");
+                        if (!actionImportNodes[action.actionNode].includes(action.type + "_ERROR")) actionImportNodes[action.actionNode].push(action.type + "_ERROR");
+                        if (!actionImportNodes[action.actionNode].includes(action.type + "_SUCCESS")) actionImportNodes[action.actionNode].push(action.type + "_SUCCESS");
+                    } else {
+                        actionImportNodes[action.actionNode].push(action.type);
+                    }
                 } else if(!actionImportNodes[action.actionNode]) {
-                    actionImportNodes[action.actionNode] = [action.type];
+                    if (action.actionClass === 'network') {
+                        actionImportNodes[action.actionNode] = [
+                            action.type + "_REQUEST",
+                            action.type + "_ERROR",
+                            action.type + "_SUCCESS"
+                        ];
+                    } else {
+                        actionImportNodes[action.actionNode] = [action.type];
+                    }
                 }
             });
         });

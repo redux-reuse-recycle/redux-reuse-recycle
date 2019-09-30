@@ -56,16 +56,16 @@ class ActionFileGenerator extends AbstractFileGenerator {
                 functions += `const ${this.formatFunctionName(action.type)} = (payload) => {\n`;
                 functions += `\tconst request = ${action.actionClass}Service.${this.formatFunctionName(action.type)}(payload);\n\n`;
                 functions += `\treturn (dispatch) => {\n`;
-                functions += `\t\tdispatch({ type: "${action.type}_REQUEST" });\n\n`;
+                functions += `\t\tdispatch({ type: ${action.type}_REQUEST });\n\n`;
                 functions += `\t\trequest.then((payload) => dispatch({\n`;
-                functions += `\t\t\ttype: "${action.type}_SUCCESS", \n`;
+                functions += `\t\t\ttype: ${action.type}_SUCCESS, \n`;
                 functions += `\t\t\tpayload,\n`;
                 functions += `\t\t})).catch((error) => dispatch({\n`;
-                functions += `\t\t\ttype: "${action.type}_ERROR",\n`;
+                functions += `\t\t\ttype: ${action.type}_ERROR,\n`;
                 functions += `\t\t\terror,\n`;
                 functions += `\t\t}));\n`;
                 functions += `\t}\n`;
-                functions += `}\n\n`;
+                functions += `};\n\n`;
             } else {
                 functions += `const ${this.formatFunctionName(action.type)} = (payload) => ({\n`;
                 functions += `\ttype: ${action.type},\n` + '\tpayload\n' + '});\n\n';

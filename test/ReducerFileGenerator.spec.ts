@@ -60,11 +60,15 @@ describe("ReducerFileGenerator",  () => {
             ],
         });
         let code = new ReducerFileGenerator(node).codeGen();
-        // FileCreator(code, './reducer.js');
+        FileCreator(code, './reducer.js');
         expect(code).to.equal('import {\n' +
             '\tSET_USERS_BEEN_FETCHED,\n' +
-            '\tGET_ALL_USERS,\n' +
-            '\tDELETE_ALL_USERS,\n' +
+            '\tGET_ALL_USERS_REQUEST,\n' +
+            '\tGET_ALL_USERS_ERROR,\n' +
+            '\tGET_ALL_USERS_SUCCESS,\n' +
+            '\tDELETE_ALL_USERS_REQUEST,\n' +
+            '\tDELETE_ALL_USERS_ERROR,\n' +
+            '\tDELETE_ALL_USERS_SUCCESS,\n' +
             '} from "../actions/users.js";\n' +
             '\n' +
             'const initialState = {\n' +
@@ -80,12 +84,12 @@ describe("ReducerFileGenerator",  () => {
             'export default function counterReducer(state = initialState, action = {}) {\n' +
             '\tswitch(action.type) {\n' +
             '\t\tcase SET_USERS_BEEN_FETCHED:\n' +
-            '\t\t\treturn{\n' +
+            '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\thasUsersBeenFetched: typeof action.payload === \'boolean\' ? action.payload : !state.hasUsersBeenFetched,\n' +
             '\t\t\t};\n' +
             '\t\tcase GET_ALL_USERS_REQUEST:\n' +
-            '\t\t\treturn{\n' +
+            '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\tmeta: {\n' +
             '\t\t\t\t\tloading: true,\n' +
@@ -93,13 +97,13 @@ describe("ReducerFileGenerator",  () => {
             '\t\t\t\t},\n' +
             '\t\t\t};\n' +
             '\t\tcase GET_ALL_USERS_SUCCESS:\n' +
-            '\t\t\treturn{\n' +
+            '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\tusers1: action.payload ? action.payload : state.users1,\n' +
             '\t\t\t\tusers2: action.payload ? action.payload : state.users2,\n' +
             '\t\t\t};\n' +
             '\t\tcase DELETE_ALL_USERS_REQUEST:\n' +
-            '\t\t\treturn{\n' +
+            '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\tmeta: {\n' +
             '\t\t\t\t\tloading: true,\n' +
@@ -107,7 +111,7 @@ describe("ReducerFileGenerator",  () => {
             '\t\t\t\t},\n' +
             '\t\t\t};\n' +
             '\t\tcase DELETE_ALL_USERS_SUCCESS:\n' +
-            '\t\t\treturn{\n' +
+            '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\tusers1: action.payload ? action.payload : state.users1,\n' +
             '\t\t\t\tusers2: action.payload ? action.payload : state.users2,\n' +
