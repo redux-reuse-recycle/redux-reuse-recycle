@@ -1,6 +1,5 @@
 import AbstractNode from './AbstractNode';
 import ReducerVariableInterface from "../interfaces/ReducerVariableInterface";
-import ReducerFileGenerator from '../generators/ReducerFileGenerator';
 import IRVisitor from "../../visitor/IRVisitor";
 
 class ReducerNode extends AbstractNode {

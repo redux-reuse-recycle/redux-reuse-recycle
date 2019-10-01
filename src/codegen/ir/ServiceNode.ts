@@ -1,6 +1,5 @@
 import AbstractNode from './AbstractNode';
 import ServiceCaseInterface from "../interfaces/ServiceCaseInterface";
-import ServiceFileGenerator from '../generators/ServiceFileGenerator';
 import IRVisitor from "../../visitor/IRVisitor";
 
 class ServiceNode extends AbstractNode {

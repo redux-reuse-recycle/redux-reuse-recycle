@@ -1,9 +1,7 @@
-import ActionInterface from './ActionInterface';
-
-interface ReducerVariableInterface {
-    name: string,
-    initialValue: any,
-    modifiedBy: ActionInterface[];
+interface ServiceCaseInterface {
+    type: string,
+    url: string,
+    method: string,
 }
 
-export default ReducerVariableInterface;
+export default ServiceCaseInterface;
