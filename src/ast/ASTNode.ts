@@ -1,3 +1,7 @@
+import ASTVisitor from "../visitor/ASTVisitor";
+
 export default abstract class ASTNode {
-  // TODO: Accept Visitor
+
+    abstract acceptASTVisitor(visitor: ASTVisitor): any;
+
 }
