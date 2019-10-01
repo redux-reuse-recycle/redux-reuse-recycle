@@ -36,4 +36,3 @@ export default abstract class DefaultTypeVisitor implements TypeVisitor {
     }
 
 }
-

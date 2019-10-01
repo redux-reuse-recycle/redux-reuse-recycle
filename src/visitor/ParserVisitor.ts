@@ -24,6 +24,10 @@ export default class ParserVisitor {
         
     }
 
+    parserValue(tokenizer: Tokenizer): AST.Value {
+        
+    }
+
     parsePrimitive(tokenizer: Tokenizer): AST.Primitive {
 
     }
@@ -125,7 +129,5 @@ export default class ParserVisitor {
     parseString(tokenizer: Tokenizer): AST.String {
 
     }
-    
 
 }
-
