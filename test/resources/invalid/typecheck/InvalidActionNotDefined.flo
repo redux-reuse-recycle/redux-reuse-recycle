@@ -2,7 +2,7 @@ action GET_ALL_USERS = network(url = '/users', method = 'GET');
 action UPDATE_USER = network(url = '/users/:uuid', method = 'PUT');
 
 flow USERS = {
-    array users = [];
+    string[] users = [];
     boolean enoughUsersOnline = false;
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;

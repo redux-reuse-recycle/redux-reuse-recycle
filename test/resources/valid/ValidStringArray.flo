@@ -1,6 +1,6 @@
 action STUB_ACTION = stub();
 
 flow MY_FLOW = {
-    array myStringArray = ['a', 'b', 'c'];
+    string[] myStringArray = ['a', 'b', 'c'];
     STUB_ACTION >> myStringArray;
 }

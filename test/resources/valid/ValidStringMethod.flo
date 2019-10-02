@@ -3,6 +3,6 @@ string getMethod = 'GET';
 action GET_ALL_POSTS = network(url = '/posts', method = getMethod);
 
 flow POSTS = {
-    array posts = [];
+    string[] posts = [];
     GET_ALL_POSTS >> posts;
 }

@@ -3,8 +3,8 @@ action UPDATE_USER = network(url = '/users/:uuid', method = 'PUT');
 action ENOUGH_USERS_ONLINE = toggle();
 
 flow USERS = {
-    array users = [];
-    int users = 0;
+    string[] users = [];
+    number users = 0;
     boolean enoughUsersOnline = false;
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;

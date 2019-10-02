@@ -1,6 +1,6 @@
 action STUB_ACTION = stub();
 
 flow MY_FLOW = {
-    array myNumberArray = [1, 2, 3];
+    number[] myNumberArray = [1, 2, 3];
     STUB_ACTION >> myNumberArray;
 }

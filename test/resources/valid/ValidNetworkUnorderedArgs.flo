@@ -1,6 +1,6 @@
 action GET_ALL_POSTS = network(method = 'GET', url = '/posts');
 
 flow POSTS = {
-    array posts = [];
+    string[] posts = [];
     GET_ALL_POSTS >> posts;
 }

@@ -8,14 +8,14 @@ action GET_ALL_USERS = network(url = Urls.USERS_URL, method = 'GET');
 action UPDATE_USER = network(url = UpdateUrls.UPDATE_USER_URL, method = 'PUT');
 
 flow POSTS = {
-    array posts = [];
+    string[] posts = [];
     js = Urls;
     GET_ALL_POSTS >> posts;
     DELETE_ALL_POSTS >> posts;
 }
 
 flow USERS = {
-    array users = [];
+    string[] users = [];
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;
 }

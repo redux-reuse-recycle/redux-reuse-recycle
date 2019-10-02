@@ -1,0 +1,6 @@
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    boolean[] myBooleanArray = [false, true, false];
+    STUB_ACTION >> myBooleanArray;
+}

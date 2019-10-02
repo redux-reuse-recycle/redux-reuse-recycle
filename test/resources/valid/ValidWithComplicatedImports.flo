@@ -4,7 +4,7 @@ import './ImportBImportsC' as ImportB;
 action ENOUGH_USERS_ONLINE = toggle();
 
 flow USERS = {
-    array users = [];
+    string[] users = [];
     boolean enoughUsersOnline = false;
     ImportA.GET_ALL_USERS >> users;
     ImportB.UPDATE_USER >> users;

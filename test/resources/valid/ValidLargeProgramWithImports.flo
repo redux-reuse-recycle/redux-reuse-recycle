@@ -17,13 +17,13 @@ action TOGGLE_SIGNED_IN = toggle();
 action STUB_ACTION = stub();
 
 flow POSTS = {
-    array posts = [];
+    string[] posts = [];
     GET_ALL_POSTS >> posts;
     DELETE_ALL_POSTS >> posts;
 }
 
 flow USERS = {
-    array users = [];
+    string[] users = [];
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;
 }

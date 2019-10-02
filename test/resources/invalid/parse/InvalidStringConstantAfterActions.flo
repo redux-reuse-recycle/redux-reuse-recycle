@@ -5,7 +5,7 @@ action ENOUGH_USERS_ONLINE = toggle();
 string usersUrl = '/users';
 
 flow USERS = {
-    array users = [];
+    string[] users = [];
     boolean enoughUsersOnline = false;
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;
