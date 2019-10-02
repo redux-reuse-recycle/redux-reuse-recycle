@@ -1,0 +1,6 @@
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    any myAny = ['a', false, 2];
+    STUB_ACTION >> myAny;
+}

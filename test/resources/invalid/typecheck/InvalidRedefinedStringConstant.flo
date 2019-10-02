@@ -1,0 +1,13 @@
+string users = '/users';
+
+action GET_ALL_USERS = network(url = users, method = 'GET');
+action UPDATE_USER = network(url = '/users/:uuid', method = 'PUT');
+action ENOUGH_USERS_ONLINE = toggle();
+
+flow USERS = {
+    array users = [];
+    boolean enoughUsersOnline = false;
+    GET_ALL_USERS >> users;
+    UPDATE_USER >> users;
+    ENOUGH_USERS_ONLINE >> enoughUsersOnline;
+}

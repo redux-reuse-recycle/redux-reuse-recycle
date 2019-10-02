@@ -1,0 +1,8 @@
+action GET_ALL_POSTS = network(url = '/posts', method = 'GET');
+action GET_ALL_PENDING_POSTS = network(url = '/posts/pending', method = 'GET');
+
+flow POSTS = {
+    array posts = [];
+    array pendingPosts = [];
+    GET_ALL_POSTS, GET_ALL_PENDING_POSTS >> posts, pendingPosts;
+}

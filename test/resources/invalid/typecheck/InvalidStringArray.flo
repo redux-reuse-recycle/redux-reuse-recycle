@@ -1,0 +1,6 @@
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    array myStringArray = [3, 1, 67];
+    STUB_ACTION >> myStringArray;
+}

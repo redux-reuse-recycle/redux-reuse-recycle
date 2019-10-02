@@ -1,0 +1,6 @@
+action TOGGLE_LOGIN_MODAL = toggle(nonExistentParameter = "arg");
+
+flow MODALS = {
+    boolean loggedIn = false;
+    TOGGLE_LOGIN_MODAL >> loggedIn;
+}

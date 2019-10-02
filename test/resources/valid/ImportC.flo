@@ -1,0 +1,2 @@
+string USERS_URL = '/users';
+string UPDATE_USERS_URL = '/users/:uuid';

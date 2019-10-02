@@ -1,0 +1,6 @@
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    array myNumberArray = [false, true, false];
+    STUB_ACTION >> myNumberArray;
+}

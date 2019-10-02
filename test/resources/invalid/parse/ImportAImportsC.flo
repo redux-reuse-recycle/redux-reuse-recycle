@@ -1,0 +1,3 @@
+import './ImportC' as ImportC;
+
+action GET_ALL_USERS = network(url = ImportC.USERS_URL, method = 'GET');

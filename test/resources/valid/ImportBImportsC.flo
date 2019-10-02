@@ -1,0 +1,3 @@
+import './ImportC' as ImportC;
+
+action UPDATE_USER = network(url = ImportC.UPDATE_USERS_URL, method = 'PUT');
