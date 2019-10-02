@@ -1,0 +1,23 @@
+import './UrlsImport' as Urls;
+import './UpdateUrlsImport' as UpdateUrls;
+
+string Urls = '/urls';
+
+action GET_ALL_POSTS = network(url = Urls.POSTS_URL, method = 'GET');
+action DELETE_ALL_POSTS = network(url = Urls.POSTS_URL, method = 'DELETE');
+
+action GET_ALL_USERS = network(url = Urls.USERS_URL, method = 'GET');
+action UPDATE_USER = network(url = UpdateUrls.UPDATE_USER_URL, method = 'PUT');
+
+flow POSTS = {
+    string[] posts = [];
+    string Urls = '';
+    GET_ALL_POSTS >> posts;
+    DELETE_ALL_POSTS >> posts;
+}
+
+flow USERS = {
+    string[] users = [];
+    GET_ALL_USERS >> users;
+    UPDATE_USER >> users;
+}

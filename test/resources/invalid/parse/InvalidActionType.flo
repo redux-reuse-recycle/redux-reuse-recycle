@@ -1,0 +1,6 @@
+action GET_ALL_POSTS = something(url = '/posts', method = 'GET');
+
+flow POSTS = {
+    string[] posts = [];
+    GET_ALL_POSTS >> posts;
+}

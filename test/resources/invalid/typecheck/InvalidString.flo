@@ -1,0 +1,6 @@
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    string myString = 21;
+    STUB_ACTION >> myString;
+}

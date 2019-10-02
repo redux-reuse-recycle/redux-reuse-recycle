@@ -1,0 +1,12 @@
+import './ImportAImportsC' as ImportA;
+import './ImportBImportsC' as ImportB;
+
+action ENOUGH_USERS_ONLINE = toggle();
+
+flow USERS = {
+    string[] users = [];
+    boolean enoughUsersOnline = false;
+    ImportA.GET_ALL_USERS >> users;
+    ImportB.UPDATE_USER >> users;
+    ENOUGH_USERS_ONLINE >> enoughUsersOnline;
+}

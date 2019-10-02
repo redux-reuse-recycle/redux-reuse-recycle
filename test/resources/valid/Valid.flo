@@ -1,0 +1,6 @@
+action TOGGLE_LOGIN_MODAL = toggle();
+
+flow MODALS = {
+    boolean isLoginModalOpen = false;
+    TOGGLE_LOGIN_MODAL >> isLoginModalOpen;
+}

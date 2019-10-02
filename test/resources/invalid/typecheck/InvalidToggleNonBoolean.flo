@@ -1,0 +1,6 @@
+action TOGGLE_LOGIN_MODAL = toggle();
+
+flow MODALS = {
+    number someNumber = 2;
+    TOGGLE_LOGIN_MODAL >> someNumber;
+}

@@ -1,0 +1,6 @@
+action INCREMENT_COUNTER = counter();
+
+flow COUNTER = {
+    boolean count = false;
+    INCREMENT_COUNTER >> count;
+}

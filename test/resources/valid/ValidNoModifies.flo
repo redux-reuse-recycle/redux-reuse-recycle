@@ -1,0 +1,6 @@
+action SUB_USER = stub();
+
+flow SUBS = {
+    any someVar;
+    SUB_USER;
+}

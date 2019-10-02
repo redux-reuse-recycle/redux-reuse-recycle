@@ -1,0 +1,6 @@
+action GET_ALL_POSTS = network(url = 4, method = 'GET');
+
+flow POSTS = {
+    string[] posts = [];
+    GET_ALL_POSTS >> posts;
+}

@@ -1,0 +1,50 @@
+string postsUrl = '/posts';
+string usersUrl = '/users';
+
+action GET_ALL_POSTS = network(url = postsUrl, method = 'GET');
+action DELETE_ALL_POSTS = network(url = postsUrl, method = 'DELETE');
+
+action GET_ALL_USERS = network(url = usersUrl, method = 'GET');
+action UPDATE_USER = network(url = '/users/:uuid', method = 'PUT');
+
+action INCREMENT_COUNTER = counter();
+
+action TOGGLE_LOGIN_MODAL_OPEN = toggle();
+action TOGGLE_SIGNUP_MODAL_OPEN = toggle();
+
+action TOGGLE_SIGNED_IN = toggle();
+
+action STUB_ACTION = stub();
+
+flow POSTS = {
+    string[] posts = [];
+    GET_ALL_POSTS >> posts;
+    DELETE_ALL_POSTS >> posts;
+}
+
+flow USERS = {
+    string[] users = [];
+    GET_ALL_USERS >> users;
+    UPDATE_USER >> users;
+}
+
+flow COUNTER = {
+    number count = 0;
+    INCREMENT_COUNTER >> count;
+}
+
+flow MODALS = {
+    boolean isLoginModalOpen = false;
+    boolean isSignupModalOpen = false;
+    TOGGLE_LOGIN_MODAL_OPEN >> isLoginModalOpen;
+    TOGGLE_SIGNUP_MODAL_OPEN >> isSignupModalOpen;
+}
+
+flow ME = {
+    boolean isSignedIn = false;
+    TOGGLE_SIGNED_IN >> isSignedIn;
+}
+
+flow MY_FUN_STUB_FLOW = {
+    STUB_ACTION;
+}

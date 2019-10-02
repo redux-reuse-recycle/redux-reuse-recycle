@@ -1,0 +1,7 @@
+action GET_ALL_LOGGED_IN_USERS = network(url = '/users/loggedin', method = 'GET');
+action GET_ALL_LOGGED_OUT_USERS = network(url = '/users/loggedout', method = 'GET');
+
+flow GET_USERS = {
+    string[] users = [];
+    GET_ALL_LOGGED_IN_USERS, GET_ALL_LOGGED_OUT_USERS >> users;
+}

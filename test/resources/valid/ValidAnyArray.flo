@@ -1,0 +1,6 @@
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    any[] anyArray = [false, 'blob', 4];
+    STUB_ACTION >> anyArray;
+}
