@@ -1,0 +1,8 @@
+any[] randomArray = [false, 'blob', 4];
+
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    any[] anyArray = randomArray;
+    STUB_ACTION >> anyArray;
+}

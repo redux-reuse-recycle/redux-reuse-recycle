@@ -1,0 +1,8 @@
+boolean[] defaultToggleValues = [false, true, false];
+
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    boolean[] toggleValues = defaultToggleValues;
+    STUB_ACTION >> toggleValues;
+}

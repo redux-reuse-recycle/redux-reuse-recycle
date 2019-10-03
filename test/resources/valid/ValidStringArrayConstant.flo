@@ -1,11 +1,11 @@
-number notAString = 5;
+string[] defaultUsers = ['admin'];
 
 action GET_ALL_USERS = network(url = '/users', method = 'GET');
 action UPDATE_USER = network(url = '/users/:uuid', method = 'PUT');
 action ENOUGH_USERS_ONLINE = toggle();
 
 flow USERS = {
-    string[] users = [];
+    string[] users = defaultUsers;
     boolean enoughUsersOnline = false;
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;

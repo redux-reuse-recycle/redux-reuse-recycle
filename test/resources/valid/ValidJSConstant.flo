@@ -1,0 +1,9 @@
+js myJsConstant = `var test = {'obj': 'test'};`;
+
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    js myJs = myJsConstant;
+    boolean myBoolean = false;
+    STUB_ACTION >> myBoolean;
+}
