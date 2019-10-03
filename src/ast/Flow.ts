@@ -1,6 +1,6 @@
 import Value from "./Value";
 import Declaration from "./Declaration";
-import { Modifier } from "typescript";
+import Modifier  from "./Modifier";
 import ASTVisitor from "../visitor/ASTVisitor";
 
 export default class Flow extends Value {
