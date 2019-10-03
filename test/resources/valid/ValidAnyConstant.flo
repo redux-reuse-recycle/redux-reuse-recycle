@@ -1,0 +1,8 @@
+any random = ['a', 'b', 'c'];
+
+action STUB_ACTION = stub();
+
+flow MY_FLOW = {
+    any myAny = random;
+    STUB_ACTION >> myAny;
+}

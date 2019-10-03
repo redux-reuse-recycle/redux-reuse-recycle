@@ -1,0 +1,10 @@
+number theMeaningOfLife = 42;
+string postsUrl = '/posts';
+
+action GET_ALL_POSTS = network(url = postsUrl, method = 'GET');
+
+flow POSTS = {
+    string[] posts = [];
+    number myNumber = theMeaningOfLife;
+    GET_ALL_POSTS >> posts;
+}
