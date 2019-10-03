@@ -1,7 +1,6 @@
 action GET_ALL_USERS = network(url = '/users', method = 'GET');
 action UPDATE_USER = network(url = '/users/:uuid', method = 'PUT');
 action ENOUGH_USERS_ONLINE = toggle();
-action ENOUGH_USERS_ONLINE = toggle();
 
 flow USERS = {
     string[] users = [];
@@ -9,4 +8,9 @@ flow USERS = {
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;
     ENOUGH_USERS_ONLINE >> enoughUsersOnline;
+}
+
+flow USERS = {
+    string[] otherUsers = [];
+    UPDATE_USER >> otherUsers;
 }
