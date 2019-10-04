@@ -10,4 +10,8 @@ export default class String extends Primitive {
         return visitor.visitString(this);
     }
 
+    toString(): String{
+        return value;
+    }
+
 }
