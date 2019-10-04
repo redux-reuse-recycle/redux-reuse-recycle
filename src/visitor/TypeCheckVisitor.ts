@@ -20,22 +20,23 @@ import Primitive from "../ast/primitive/Primitive";
 export default class TypeCheckVisitor extends DefaultASTVisitor {
 
     visitAction(action: AST.Action): any {
-    //    TODO: check that param name & type match what is expected from the action class. order doesn't matter
-        let actualTypes = new Set();
-        for (let dec of action.parameters)
+        let actualTypes = new Map();
+        for (let p of action.params)
         {
-            actualTypes.add(dec.acceptASTVisitor(this));
+            actualTypes.set(p.acceptASTVisitor(this));
         }
 
-        let expectedTypes = action.clss.acceptASTVisitor();
 
-        if(expectedTypes.size != actualTypes.size){
-            throw new Error("Action has incorrect number of parameters. Expected " + expectedTypes.size + " but received " + actualTypes.size);
+        if(action.clss.expectedParams.size != actualTypes.size){
+            throw new Error("Action has incorrect number of parameters. Expected " + action.clss.expectedParams.size + " but received " + actualTypes.size);
         }
-    }
 
-    visitClass(astClass: AST.Class): any {
-        // TODO: encode the parameters expected od each action class as a set of (param name, typeof) strings
+        for (let param of action.clss.expectedParams.keys()){
+            if(!actualTypes.get(param) === action.clss.expectedParams.get(param))
+            {
+                throw new Error(param + " expected a value of type " + action.clss.expectedParams.get(param) + ", got " + actualTypes.get(param));
+            }
+        }
     }
 
     visitDeclaration(declaration: AST.Declaration): any {
@@ -161,7 +162,7 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
             mod.acceptASTVisitor(this)
         }
 
-    //    TODO need to know which flow I'm inside, query flow from symboltable to get its flowsynboltable, query for id there
+    //    TODO need to know which flow I'm inside, query for id there
 
     }
 
@@ -180,7 +181,15 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
         //    TODO: (recursively) dereference and check value is a primitive
         }
 
-        return (parameter.name, typeof parameter.value)
+        if(this.valueConstants.has(name)){
+            throw new Error(name + " is already defined.");
+        }
+
+        // Enforce uppercase for legibility
+        if(parameter.name === "method" && !parameter.value.toString() in ['GET', 'PUT', 'POST', 'DELETE', 'PATCH']){
+            throw new Error(parameter.name + " has invalid method type.");
+        }
+        return (parameter.name, typeof parameter.value);
 
     }
 
@@ -192,6 +201,6 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
         }
     }
 
-//    Import, identifier, type, primitive nodes have no typechecking
+//    Import, identifier, type, class, primitive nodes have no typechecking
 
 }
