@@ -87,7 +87,7 @@ export default class SymbolTable {
         try{
             return f.accessValueConstant(varName);
         } catch (e){
-            this.accessValueConstant(varName);
+            return this.accessValueConstant(varName);
         }
 
     }
@@ -99,7 +99,7 @@ export default class SymbolTable {
         try {
             return f.accessAction(varName);
         } catch (e){
-            this.accessAction(varName);
+            return this.accessAction(varName);
         }
 
     }
