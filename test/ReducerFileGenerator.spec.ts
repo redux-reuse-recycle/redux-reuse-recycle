@@ -1,9 +1,6 @@
 import 'mocha';
 import { expect } from "chai";
 
-import Logger from "../src/utils/Logger";
-Logger.LogToConsole = false;
-
 import ReducerFileGenerator from "../src/codegen/generators/ReducerFileGenerator";
 import ReducerNode from "../src/codegen/ir/ReducerNode";
 import FileCreator from '../src/utils/FileCreator';

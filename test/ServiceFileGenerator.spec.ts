@@ -1,12 +1,8 @@
 import 'mocha';
 import { expect } from "chai";
 
-import Logger from "../src/utils/Logger";
-Logger.LogToConsole = false;
-
 import ServiceFileGenerator from "../src/codegen/generators/ServiceFileGenerator";
 import ServiceNode from "../src/codegen/ir/ServiceNode";
-import FileCreator from '../src/utils/FileCreator';
 
 describe("ActionFileGenerator",  () => {
     it("Produces the correct output for three actions", () => {

@@ -1,9 +1,6 @@
 import 'mocha';
 import { expect } from "chai";
 
-import Logger from "../src/utils/Logger";
-Logger.LogToConsole = false;
-
 import { main } from "../src/index";
 
 describe("Program Initialization",  () => {

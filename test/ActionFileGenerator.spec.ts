@@ -1,9 +1,6 @@
 import 'mocha';
 import { expect } from "chai";
 
-import Logger from "../src/utils/Logger";
-Logger.LogToConsole = false;
-
 import ActionFileGenerator from "../src/codegen/generators/ActionFileGenerator";
 import ActionsNode from "../src/codegen/ir/ActionsNode";
 import FileCreator from '../src/utils/FileCreator';
