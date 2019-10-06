@@ -7,7 +7,6 @@ const myVar = new AST.Program();
 */
 
 export const main = () => {
-  Logger.Log("Hello World!");
   return 0;
 };
 

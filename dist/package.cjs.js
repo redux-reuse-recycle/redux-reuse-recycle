@@ -2,19 +2,21 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var Logger = /** @class */ (function () {
-    function Logger() {
-    }
-    Logger.Log = function (message) {
+class Logger {
+    static Log(message) {
         if (!this.LogToConsole)
             return;
         console.log(message);
-    };
-    Logger.LogToConsole = true;
-    return Logger;
-}());
+    }
+}
+Logger.LogToConsole = true;
 
-var main = function () {
+/*
+// Example of import ast nodes (for Brian).
+import * as AST from "./ast";
+const myVar = new AST.Program();
+*/
+const main = () => {
     Logger.Log("Hello World!");
     return 0;
 };
