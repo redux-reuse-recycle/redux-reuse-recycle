@@ -14,10 +14,7 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
 
     visitAction(action: AST.Action): any {
         let actualTypes = new Map();
-        for (let p of action.params)
-        {
-            actualTypes.set(p.acceptASTVisitor(this));
-        }
+        action.params.forEach((p) => actualTypes.set(p.name, p.acceptASTVisitor(this)));
 
         if(action.clss.expectedParams.size != actualTypes.size){
             throw new Error("Action has incorrect number of parameters. Expected " + action.clss.expectedParams.size + " but received " + actualTypes.size);
@@ -33,58 +30,58 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
 
     visitDeclaration(declaration: AST.Declaration): any {
         // check that value matches declared type
-        switch (declaration.type){
-            case AST.ActionType: {
-                if(!declaration.value instanceof AST.Action){
+        switch (typeof declaration.type){
+            case typeof AST.ActionType: {
+                if(! (declaration.value instanceof AST.Action)){
                     throw new Error(declaration.id.name + " expects an action as a value.");
                 }
                 declaration.value.acceptASTVisitor(this);
                 break;
             }
-            case AST.AnyType: {
+            case typeof AST.AnyType: {
                 // intentionally accept everything
                 // but if it's an action, flow or array, it should still be internally typechecked
                 declaration.value.acceptASTVisitor(this);
                 break;
             }
-            case AST.ArrayType: {
-                if(!declaration.value instanceof AST.Array){
+            case typeof AST.ArrayType: {
+                if(! (declaration.value instanceof AST.Array)){
                     throw new Error(declaration.id.name + " expects an array value.");
                 }
                 declaration.value.acceptASTVisitor(this);
                 break;
             }
-            case AST.BooleanType: {
-                if(!declaration.value instanceof AST.Boolean){
+            case typeof AST.BooleanType: {
+                if(! (declaration.value instanceof AST.Boolean)){
                     throw new Error(declaration.id.name + " expects a boolean value.");
                 }
                 break;
             }
-            case AST.FlowType: {
-                if(!declaration.value instanceof AST.Flow){
+            case typeof AST.FlowType: {
+                if(! (declaration.value instanceof AST.Flow)){
                     throw new Error(declaration.id.name + " expects a flow as a value.");
                 }
                 // This probably won't survive nested flows but should be ok for now
                 let oldVal = this.currentFlowName;
-                this.currentFlowName = declaration.name;
+                this.currentFlowName = declaration.id.name;
                 declaration.value.acceptASTVisitor(this);
                 this.currentFlowName = oldVal;
                 break;
             }
-            case AST.JSType: {
-                if(!declaration.value instanceof AST.JS){
+            case typeof AST.JSType: {
+                if(! (declaration.value instanceof AST.JS)){
                     throw new Error(declaration.id.name + " expects a JavaScript value.");
                 }
                 break;
             }
-            case AST.NumberType: {
-                if(!declaration.value instanceof AST.Number){
+            case typeof AST.NumberType: {
+                if(! (declaration.value instanceof AST.Number)){
                     throw new Error(declaration.id.name + " expects a number value.");
                 }
                 break;
             }
-            case AST.StringType: {
-                if(!declaration.value instanceof AST.String){
+            case typeof AST.StringType: {
+                if(! (declaration.value instanceof AST.String)){
                     throw new Error(declaration.id.name + " expects a string value.");
                 }
                 break;
@@ -96,13 +93,14 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
     acceptPrimitiveVisitor(primitive: AST.Primitive): any {
         if(primitive instanceof AST.Array) {
             // recurse on declarations
-            switch (array.type) {
-                case AST.ActionType: {
+            switch (typeof primitive.type) {
+                case typeof AST.ActionType: {
                     throw new Error("Action arrays are not supported.");
                 }
-                case AST.AnyType: {
+                case typeof AST.AnyType: {
                     // intentionally accept everything that's not action, array or flow
-                    for (let val in array.value) {
+                    primitive.value.forEach((val: AST.Primitive) =>
+                    {
                         if (val instanceof AST.Action){
                             throw new Error("Arrays containing actions are not supported.");
                         }
@@ -114,45 +112,29 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
                         if (val instanceof AST.Array){
                             throw new Error("Nested arrays are not supported.");
                         }
-                    }
+                    });
                     break;
                 }
-                case AST.ArrayType: {
+                case typeof AST.ArrayType: {
                     throw new Error("Nested arrays are not supported.");
                 }
-                case AST.BooleanType: {
-                    for (let val in array.value) {
-                        if (!val instanceof AST.Boolean) {
-                            throw new Error("Boolean array expects boolean values.");
-                        }
-                    }
+                case typeof AST.BooleanType: {
+                    primitive.value.forEach((val: AST.Primitive) => {if (!(val instanceof AST.Boolean)) throw new Error("Boolean array expects boolean values.");});
                     break;
                 }
-                case AST.FlowType: {
+                case typeof AST.FlowType: {
                     throw new Error("Flow arrays are not supported.");
                 }
-                case AST.JSType: {
-                    for (let val in array.value) {
-                        if (!val instanceof AST.JS) {
-                            throw new Error("JavaScript array expects JavaScript values.");
-                        }
-                    }
+                case typeof AST.JSType: {
+                    primitive.value.forEach((val: AST.Primitive) => {if (!(val instanceof AST.JS)) throw new Error("JavaScript array expects JavaScript values.")});
                     break;
                 }
-                case AST.NumberType: {
-                    for (let val in array.value) {
-                        if (!val instanceof AST.Number) {
-                            throw new Error("Number array expects number values.");
-                        }
-                    }
+                case typeof AST.NumberType: {
+                    primitive.value.forEach((val: AST.Primitive) => {if (! (val instanceof AST.Number)) throw new Error("Number array expects number values.")});
                     break;
                 }
-                case AST.StringType: {
-                    for (let val in array.value) {
-                        if (!val instanceof AST.String) {
-                            throw new Error("String array expects string values.");
-                        }
-                    }
+                case typeof AST.StringType: {
+                    primitive.value.forEach((val: AST.Primitive) => {if (! (val instanceof AST.String)) throw new Error("String array expects string values.")});
                     break;
                 }
             }
@@ -165,25 +147,20 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
             throw new Error("Illegal nested flow.");
         }
 
-        for (let dec in flow.declarations){
-            dec.acceptASTVisitor(this);
-        }
+        flow.declarations.forEach((dec) => dec.acceptASTVisitor(this));
 
-        for (let mod in flow.modifiers){
-            mod.acceptASTVisitor(this);
-        }
+        flow.modifiers.forEach((mod) => mod.acceptASTVisitor(this));
     }
 
     visitModifier(modifier: AST.Modifier): any {
         // check that the action on the left can output to the type of the variable on the right
-        for(let action in modifier.actions){
-            for (let val in modifier.values){
+        modifier.actions.forEach((action) => {
+            modifier.values.forEach((val) => {
                 // modifiers can only exist in flows
-                if (! typeof val in this.table.accessActionDefinitionFromFlow(action, this.currentFlowName).clss.canModify){
-                    throw new Error(typeof action.clss.replace("Class", "") + " actions cannot write to " + typeof val + "variables.");
+                if (! (typeof val in action.clss.canModify)){
+                    throw new Error((typeof (action.clss)).replace("Class", "") + " actions cannot write to " + typeof val + "variables.");
                 }
-            }
-        }
+        })});
     }
 
     visitParameter(parameter: AST.Parameter): any {
@@ -206,19 +183,16 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
         }
 
         // Enforce uppercase for legibility
-        if(parameter.name === "method" && !paramVal.toString() in ['GET', 'PUT', 'POST', 'DELETE', 'PATCH']){
+        if(parameter.name === "method" && !(paramVal.toString() in ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'])){
             throw new Error(parameter.name + " has invalid method type.");
         }
-        return (parameter.name, typeof paramVal);
+        return typeof paramVal;
 
     }
 
     visitProgramFile(programFile: AST.ProgramFile): any {
         // recurse on declarations
-        for (let dec of programFile.declarations)
-        {
-            dec.acceptASTVisitor(this);
-        }
+        programFile.declarations.forEach((dec) => dec.acceptASTVisitor(this));
     }
 
 //    Import, identifier, type, class, primitive nodes have no typechecking
