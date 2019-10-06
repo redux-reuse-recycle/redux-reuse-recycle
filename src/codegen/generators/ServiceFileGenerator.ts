@@ -31,7 +31,7 @@ class ServiceFileGenerator extends AbstractFileGenerator {
                 serviceCase.method === "PUT" ||
                 serviceCase.method === "PATCH" ||
                 serviceCase.method === "DELETE";
-            services += `export const ${this.formatFunctionName(serviceCase.type)} = (${hasBody ? 'payload' : ''}) => {\n`;
+            services += `export const ${this.formatFunctionName(serviceCase.type)} = (${hasBody ? 'payload = {}' : ''}) => {\n`;
             services += `\tconst url = "${serviceCase.url}";\n\n`;
             services += `\tconst request = {\n`;
             services += `\t\tmethod: "${serviceCase.method}",\n`;
