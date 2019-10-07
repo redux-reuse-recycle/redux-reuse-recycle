@@ -128,7 +128,7 @@ export default class ParserVisitor {
         throw new ParseError("Invalid identifier: " + id);
     }
 
-    private isIdentifier(id: string): boolean {
+    private static isIdentifier(id: string): boolean {
         return /[a-z]\w*/.test(id);
     }
 
@@ -192,7 +192,7 @@ export default class ParserVisitor {
 
             array.push(this.parsePrimitiveHelper(input[-1].replace(']', '')));
 
-            return new AST.Array(this.currentType, array);
+            return new AST.Array(this.currentType!, array);
         } else {
             throw new ParseError("");
         }
@@ -231,7 +231,7 @@ export default class ParserVisitor {
 
     parseParameter(): AST.Parameter {
         let name = this.tokenizer.pop();
-        this.tokenizer.popAndCheck("=")
+        this.tokenizer.popAndCheck("=");
         let val = this.parseValue();
         return new AST.Parameter(name, val);
     }
@@ -274,7 +274,7 @@ export default class ParserVisitor {
         return new AST.Modifier(actionIDs, varIDs);
     }
 
-    private isType(token: string){
+    private static isType(token: string){
         return token in [ "action", "flow", "js", "any", "number", "string", "boolean", "any[]", "number[]","string[]",
             "boolean[]", "js[]"];
     }
