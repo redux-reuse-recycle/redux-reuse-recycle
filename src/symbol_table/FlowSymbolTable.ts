@@ -8,7 +8,7 @@ export default class FlowSymbolTable extends SymbolTable{
         throw new Error("Nested flows are not supported.");
     }
 
-    public accessFlow(name: string): Flow {
+    public accessFlow(name: string): FlowSymbolTable {
         throw new Error("Nested flows are not supported.");
     }
 

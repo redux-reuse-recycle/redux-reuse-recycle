@@ -3,144 +3,287 @@ import Tokenizer from "../Tokenizer";
 import SymbolTable from "../symbol_table/SymbolTable";
 
 export default class ParserVisitor {
-    private readonly tokenizer: Tokenizer;
+    private tokenizer: Tokenizer;
+    private symbolTable: SymbolTable;
+    private currentDeclarationID?: string;
+    private currentType?: AST.Type;
 
-    constructor(tokenizer: Tokenizer) {
-        this.tokenizer = tokenizer;
+    constructor(tkn: Tokenizer) {
+        this.tokenizer = tkn;
+        this.symbolTable = new SymbolTable();
     }
 
-    parse() : AST.ASTNode {
-        throw new Error("Not Yet Implemented!");
+    parse(): AST.ASTNode {
+        return this.parseProgramFile();
     }
 
-    getSymbolTable(): SymbolTable {
-        throw new Error("Not Yet Implemented!");
+    getSymbolTable(): SymbolTable{
+        return this.symbolTable;
     }
-
-    parseProgramFile(tokenizer: Tokenizer): AST.ProgramFile
+    
+    parseProgramFile(): AST.ProgramFile
     {
-        throw new Error("Not Yet Implemented!");
+        let imports: AST.ImportStatement[] = [];
+        let declarations: AST.Declaration[] = [];
+
+        while(this.tokenizer.top() === "import"){
+            imports.push(this.parseImportStatement());
+        }
+
+        while(this.tokenizer.hasNext()){
+            declarations.push(this.parseDeclaration());
+        }
+
+        return new AST.ProgramFile(imports, declarations);
+
     }
 
-    parseImportStatement(tokenizer: Tokenizer): AST.ImportStatement {
-        throw new Error("Not Yet Implemented!");
+    parseImportStatement(): AST.ImportStatement {
+        this.tokenizer.popAndCheck("import");
+        let filePath = this.tokenizer.pop();
+        this.tokenizer.popAndCheck("as");
+        let id = this.parseIdentifier();
+        this.optionalSemiColon();
+        return new AST.ImportStatement(filePath, id);
     }
 
-    parseDeclaration(tokenizer: Tokenizer): AST.Declaration {
-        throw new Error("Not Yet Implemented!");
+    parseDeclaration(fromFlow?: string): AST.Declaration {
+        let type = this.parseType();
+        let id = this.parseIdentifier();
+        this.currentDeclarationID = id.name;
+        this.currentType = type;
+
+        this.tokenizer.popAndCheck("=");
+        let value = this.parseValue();
+        this.optionalSemiColon();
+        this.currentDeclarationID = undefined;
+        this.currentType = undefined;
+
+        let st: SymbolTable;
+        if(fromFlow == null) {
+            st = this.symbolTable;
+        } else {
+            st = this.symbolTable.accessFlow(fromFlow);
+        }
+
+        if(value instanceof AST.Action){
+            st.defineAction(id.name, value);
+        } else if(value instanceof AST.Flow){
+            st.defineFlow(id.name, value);
+        } else {
+            st.defineValueConstant(id.name, value);
+        }
+
+        return new AST.Declaration(type, id, value);
     }
 
-    parseType(tokenizer: Tokenizer): AST.Type {
-        throw new Error("Not Yet Implemented!");
+    parseType(): AST.Type {
+        let type = this.tokenizer.pop();
+        switch (type){
+            case "js": {
+                return new AST.JSType();
+            }
+            case "any": {
+                return new AST.AnyType();
+            }
+            case "number": {
+                return new AST.NumberType();
+            }
+            case "string": {
+                return new AST.StringType();
+            }
+            case "boolean": {
+                return new AST.BooleanType();
+            }
+            case "any[]": {
+                return new AST.ArrayType(new AST.AnyType);
+            }
+            case "number[]": {
+                return new AST.ArrayType(new AST.NumberType);
+            }
+            case "string[]": {
+                return new AST.ArrayType(new AST.StringType);
+            }
+            case "boolean[]": {
+                return new AST.ArrayType(new AST.BooleanType);
+            }
+            case "js[]": {
+                return new AST.ArrayType(new AST.JSType);
+            }
+            default: {
+                throw new Error("Unexpected token " + type);
+            }
+        }
     }
 
-    parseIdentifier(tokenizer: Tokenizer): AST.Identifier {
-        throw new Error("Not Yet Implemented!");
+    parseIdentifier(): AST.Identifier {
+        return this.parseIdentifierHelper(this.tokenizer.pop());
     }
 
-    parserValue(tokenizer: Tokenizer): AST.Value {
-        throw new Error("Not Yet Implemented!");
+    parseIdentifierHelper(id: string): AST.Identifier{
+        if(this.isIdentifier(id)){
+            return new AST.Identifier(id);
+        }
+        throw new Error("Invalid identifier: " + id);
     }
 
-    parsePrimitive(tokenizer: Tokenizer): AST.Primitive {
-        throw new Error("Not Yet Implemented!");
+    private isIdentifier(id: string): boolean {
+        return /[a-z]\w*/.test(id);
     }
 
-    parseAction(tokenizer: Tokenizer): AST.Action {
-        throw new Error("Not Yet Implemented!");
+    parseValue(): AST.Value {
+        let top = this.tokenizer.top();
+        if(top != null){
+            throw new Error("Unexpected end of file.")
+        } else if (top!.startsWith('{')){
+            return this.parseFlow();
+        } else if(this.checkActionType()){
+            return this.parseAction();
+        } else{
+            return this.parsePrimitive();
+        }
     }
 
-    parseFlow(tokenizer: Tokenizer): AST.Flow {
-        throw new Error("Not Yet Implemented!");
+    checkActionType(): boolean {
+        return this.tokenizer.top() === "network" || this.tokenizer.top() === "toggle" || this.tokenizer.top() ===  "counter" || this.tokenizer.top() === "stub";
     }
 
-    parseClass(tokenizer: Tokenizer): AST.Class {
-        throw new Error("Not Yet Implemented!");
+    parsePrimitive(): AST.Primitive {
+        let val = this.tokenizer.pop();
+        if(val === null) {
+            throw new Error("Unexpected end of file.");
+        }
+        return this.parsePrimitiveHelper(val);
     }
 
-    parseParameter(tokenizer: Tokenizer): AST.Parameter {
-        throw new Error("Not Yet Implemented!");
+    private parsePrimitiveHelper(val: string): AST.Primitive {
+        if(/\d+/.test(val)){
+            return new AST.Number(Number(val));
+        } else if(/"\w+"/.test(val) || /'\w+'/.test(val)){
+            return new AST.String(val.replace('"', ''));
+        } else if(/true/.test(val)){
+            return new AST.Boolean(true);
+        } else if(/false/.test(val)){
+            return new AST.Boolean(false);
+        } else if(val.startsWith("`")){
+            // js type may contain spaces
+            if(!val.endsWith("`")){
+                let top = this.tokenizer.top();
+                while(top != null && !top.endsWith("`")){
+                    val += " ";
+                    val += this.tokenizer.pop();
+                }
+            }
+
+            return new AST.JS(val);
+        } else if(val.startsWith("[")){
+            let input = val.replace("[", "").split(',');
+            let array: AST.Primitive[] = [];
+
+            while(!input[0].endsWith("]")) {
+                array.push(this.parsePrimitiveHelper(input.pop()!));
+
+                if(input.length == 0){
+                    // array type may contain spaces
+                    this.tokenizer.pop().split(',');
+                }
+            }
+
+            array.push(this.parsePrimitiveHelper(input[-1].replace(']', '')));
+
+            return new AST.Array(this.currentType, array);
+        } else {
+            throw new Error("");
+        }
+    }
+    
+    parseAction(): AST.Action {
+        let clss = this.parseActionClass();
+        this.tokenizer.popAndCheck("(");
+        let params: AST.Parameter[] = [];
+        while(this.tokenizer.top() !== ")"){
+            params.push(this.parseParameter());
+            this.tokenizer.replaceInToken(',', '');
+        }
+        this.tokenizer.popAndCheck(")");
+        this.optionalSemiColon();
+        return new AST.Action(clss, params);
     }
 
-    parseModifier(tokenizer: Tokenizer): AST.Modifier {
-        throw new Error("Not Yet Implemented!");
+    parseActionClass(): AST.Class {
+        if(this.tokenizer.top() === "network"){
+            this.tokenizer.pop();
+            return new AST.NetworkClass();
+        } else if(this.tokenizer.top() === "toggle"){
+            this.tokenizer.pop();
+            return new AST.ToggleClass();
+        } if(this.tokenizer.top() === "counter"){
+            this.tokenizer.pop();
+            return new AST.CounterClass();
+        } if(this.tokenizer.top() === "stub"){
+            this.tokenizer.pop();
+            return new AST.StubClass();
+        } else {
+            throw new Error("Unexpected Action class: " + this.tokenizer.pop());
+        }
     }
 
-    // === Types ===
-
-    parseActionType(tokenizer: Tokenizer): AST.ActionType {
-        throw new Error("Not Yet Implemented!");
+    parseParameter(): AST.Parameter {
+        let name = this.tokenizer.pop();
+        this.tokenizer.popAndCheck("=")
+        let val = this.parseValue();
+        return new AST.Parameter(name, val);
     }
 
-    parseAnyType(tokenizer: Tokenizer): AST.AnyType {
-        throw new Error("Not Yet Implemented!");
+    parseFlow(): AST.Flow {
+        let modifiers: AST.Modifier[] = [];
+        let declarations: AST.Declaration[] = [];
+
+        this.tokenizer.popAndCheck("{");
+
+        if (this.tokenizer.top() == null) {
+            throw new Error("Unexpected end of file.");
+        } else if (this.isIdentifier(this.tokenizer.top()!)) {
+            modifiers.push(this.parseModifier());
+        } else {
+            // keep the name of the flow as a state variable in parser to avoid threading it as a parameter excessively
+            declarations.push(this.parseDeclaration(this.currentDeclarationID));
+        }
+
+        this.tokenizer.popAndCheck("}");
+        return new AST.Flow(declarations, modifiers);
     }
 
-    parseArrayType(tokenizer: Tokenizer): AST.ArrayType {
-        throw new Error("Not Yet Implemented!");
+    parseModifier(): AST.Modifier {
+        let actionIDs: AST.Identifier[] = [];
+        let varIDs: AST.Identifier[] = [];
+
+        while(this.tokenizer.top() != ">>"){
+            let input = this.tokenizer.pop().split(',');
+            input.forEach((token: string) => actionIDs.push(this.parseIdentifierHelper(token)));
+        }
+
+        this.tokenizer.popAndCheck(">>");
+
+        while(this.tokenizer.top() != null && !this.isType(this.tokenizer.top()!)){
+            let input = this.tokenizer.pop().split(',');
+            input.forEach((token: string) => varIDs.push(this.parseIdentifierHelper(token)));
+        }
+
+        return new AST.Modifier(actionIDs, varIDs);
     }
 
-    parseBooleanType(tokenizer: Tokenizer): AST.BooleanType {
-        throw new Error("Not Yet Implemented!");
+    private isType(token: string){
+        return token in [ "action", "flow", "js", "any", "number", "string", "boolean", "any[]", "number[]","string[]",
+            "boolean[]", "js[]"];
     }
 
-    parseFlowType(tokenizer: Tokenizer): AST.FlowType {
-        throw new Error("Not Yet Implemented!");
+    optionalSemiColon(): void {
+        if(this.tokenizer.top() === ";"){
+            this.tokenizer.pop();
+        }
     }
 
-    parseJSType(tokenizer: Tokenizer): AST.JSType {
-        throw new Error("Not Yet Implemented!");
-    }
 
-    parseNumberType(tokenizer: Tokenizer): AST.NumberType {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseStringType(tokenizer: Tokenizer): AST.StringType {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    // === Classes ===
-
-    parseCounterClass(tokenizer: Tokenizer): AST.CounterClass {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseNetworkClass(tokenizer: Tokenizer): AST.NetworkClass {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseStubClass(tokenizer: Tokenizer): AST.StubClass {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseToggleClass(tokenizer: Tokenizer): AST.ToggleClass {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    // === Primitives ===
-
-    parseAny(tokenizer: Tokenizer): AST.Any {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseArray(tokenizer: Tokenizer): AST.Array {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseBoolean(tokenizer: Tokenizer): AST.Boolean {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseJS(tokenizer: Tokenizer): AST.JS {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseNumber(tokenizer: Tokenizer): AST.Number {
-        throw new Error("Not Yet Implemented!");
-    }
-
-    parseString(tokenizer: Tokenizer): AST.String {
-        throw new Error("Not Yet Implemented!");
-    }
+>>>>>>> Implement parser
 }
