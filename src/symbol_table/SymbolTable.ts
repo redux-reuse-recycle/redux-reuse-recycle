@@ -67,7 +67,7 @@ export default class SymbolTable {
         this.flows.set(name, new FlowSymbolTable());
     }
 
-    public accessFlow(name: string): Flow {
+    public accessFlow(name: string): FlowSymbolTable {
         let val = this.flows.get(name);
         if(val == null){
             throw new Error("Unbound identifier: " + name);
