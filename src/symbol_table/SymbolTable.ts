@@ -2,6 +2,7 @@ import {Action, Flow} from "../ast";
 import Value from "../ast/Value";
 import FlowSymbolTable from "./FlowSymbolTable";
 import Identifier from "../ast/Identifier";
+import ParseError from "../errors/ParseError";
 
 export default class SymbolTable {
     valueConstants: Map<string, Value>;
@@ -20,7 +21,7 @@ export default class SymbolTable {
     public defineValueConstant(name: string, value: any): void {
         // Check for membership
         if(this.valueConstants.has(name)){
-            throw new Error(name + " is already defined.");
+            throw new ParseError(name + " is already defined.");
         }
         this.valueConstants.set(name, value);
     }
@@ -28,7 +29,7 @@ export default class SymbolTable {
     public accessValueConstant(name: string): Value {
         let val = this.valueConstants.get(name);
         if(val == null){
-            throw new Error("Unbound identifier: " + name);
+            throw new ParseError("Unbound identifier: " + name);
         }
 
         if(val instanceof Identifier){
@@ -41,7 +42,7 @@ export default class SymbolTable {
     public defineAction(name: string, action: Action): void {
         // Check for membership
         if(this.valueConstants.has(name)){
-            throw new Error(name + " is already defined.");
+            throw new ParseError(name + " is already defined.");
         }
         this.actions.set(name, action);
     }
@@ -49,7 +50,7 @@ export default class SymbolTable {
     public accessAction(name: string): Action {
         let val = this.actions.get(name);
         if(val == null){
-            throw new Error("Unbound identifier: " + name);
+            throw new ParseError("Unbound identifier: " + name);
         }
 
         if(val instanceof Identifier){
@@ -62,7 +63,7 @@ export default class SymbolTable {
     public defineFlow(name: string, flow: Flow): void {
         // Check for membership
         if(this.valueConstants.has(name)){
-            throw new Error(name + " is already defined.");
+            throw new ParseError(name + " is already defined.");
         }
         this.flows.set(name, new FlowSymbolTable());
     }
@@ -70,7 +71,7 @@ export default class SymbolTable {
     public accessFlow(name: string): FlowSymbolTable {
         let val = this.flows.get(name);
         if(val == null){
-            throw new Error("Unbound identifier: " + name);
+            throw new ParseError("Unbound identifier: " + name);
         }
 
         if(val instanceof Identifier){
