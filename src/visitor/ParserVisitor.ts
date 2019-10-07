@@ -128,7 +128,7 @@ export default class ParserVisitor {
         throw new ParseError("Invalid identifier: " + id);
     }
 
-    private static isIdentifier(id: string): boolean {
+    private isIdentifier(id: string): boolean {
         return /[a-z]\w*/.test(id);
     }
 
@@ -274,7 +274,7 @@ export default class ParserVisitor {
         return new AST.Modifier(actionIDs, varIDs);
     }
 
-    private static isType(token: string){
+    private isType(token: string){
         return token in [ "action", "flow", "js", "any", "number", "string", "boolean", "any[]", "number[]","string[]",
             "boolean[]", "js[]"];
     }
