@@ -27,14 +27,25 @@ export default class Tokenizer {
         return null;
     }
 
-    public pop(): string | null {
+    public pop(): string {
         if (this.top() != null) {
             let token = this.tokens[this.currentTokenIdx];
             this.currentTokenIdx++;
             this.column++;
             return token;
         }
-        return null;
+        throw new Error("Unexpected end of file.");
+    }
+
+    public popAndCheck(val: string): void {
+        let token = this.pop();
+        if (token != val){
+            throw new Error("Unexpected token " + token);
+        }
+    }
+
+    public replaceInToken(search: string | RegExp, replace: string): void {
+        this.tokens[this.currentTokenIdx] = this.top()!.replace(search, replace)
     }
 
     public hasNext(): boolean {
