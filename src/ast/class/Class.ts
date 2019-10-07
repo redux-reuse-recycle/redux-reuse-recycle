@@ -3,8 +3,8 @@ import ASTVisitor from "../../visitor/ASTVisitor";
 import ClassVisitor from "../../visitor/class/ClassVisitor";
 
 export default abstract class Class extends ASTNode {
-    public readonly expectedParams: Map<string, string>;
-    public readonly canModify: string[];
+    public readonly expectedParams = new Map<string, string>();
+    public readonly canModify: string[] = [];
 
     protected constructor(expectedParams: Map<string, string>, canModify: string[]) {
         super();

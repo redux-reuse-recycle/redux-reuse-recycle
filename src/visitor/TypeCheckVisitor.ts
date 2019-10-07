@@ -164,11 +164,13 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
 
     visitModifier(modifier: AST.Modifier): any {
         // check that the action on the left can output to the type of the variable on the right
-        modifier.actions.forEach((action) => {
-            modifier.values.forEach((val) => {
+        modifier.actions.forEach((actionID) => {
+            modifier.values.forEach((valID) => {
                 // modifiers can only exist in flows
-                if (! (typeof val in action.clss.canModify)){
-                    throw new TypeCheckError((typeof (action.clss)).replace("Class", "") + " actions cannot write to " + typeof val + "variables.");
+                let clss = this.table.accessActionDefinitionFromFlow(actionID.name, this.currentFlowName!).clss;
+                let val = this.table.accessDefinitionFromFlow(valID.name, this.currentFlowName!);
+                if (! (typeof val in clss.canModify)){
+                    throw new TypeCheckError((typeof (clss)).replace("Class", "") + " actions cannot write to " + typeof val + "variables.");
                 }
         })});
     }
