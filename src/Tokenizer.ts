@@ -1,3 +1,5 @@
+import ParseError from "./errors/ParseError";
+
 export default class Tokenizer {
 
     private readonly tokens: string[];
@@ -34,13 +36,13 @@ export default class Tokenizer {
             this.column++;
             return token;
         }
-        throw new Error("Unexpected end of file.");
+        throw new ParseError("Unexpected end of file.");
     }
 
     public popAndCheck(val: string): void {
         let token = this.pop();
         if (token != val){
-            throw new Error("Unexpected token " + token);
+            throw new ParseError("Unexpected token " + token);
         }
     }
 
