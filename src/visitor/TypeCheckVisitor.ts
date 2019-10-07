@@ -1,6 +1,7 @@
 import * as AST from "../ast";
 import DefaultASTVisitor from "./DefaultASTVisitor";
 import SymbolTable from "../symbol_table/SymbolTable";
+import TypeCheckError from "../errors/TypeCheckError";
 
 export default class TypeCheckVisitor extends DefaultASTVisitor {
     private table: SymbolTable;
@@ -12,8 +13,17 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
         this.currentFlowName = undefined;
     }
 
+    typecheck(ast: AST.ASTNode): void {
+        if (ast instanceof AST.ProgramFile) {
+            this.visitProgramFile(ast);
+        }
+        else {
+            throw new TypeCheckError("Given AST is not a Program File!");
+        }
+    }
+
     visitAction(action: AST.Action): any {
-        let actualTypes = new Map();
+        let actualTypes: Map<string, string> = new Map();
         action.params.forEach((p) => actualTypes.set(p.name, p.acceptASTVisitor(this)));
 
         if(action.clss.expectedParams.size != actualTypes.size){
@@ -21,7 +31,7 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
         }
 
         for (let param of action.clss.expectedParams.keys()){
-            if(!actualTypes.get(param) === action.clss.expectedParams.get(param))
+            if(actualTypes.get(param) !== action.clss.expectedParams.get(param))
             {
                 throw new Error(param + " expected a value of type " + action.clss.expectedParams.get(param) + ", got " + actualTypes.get(param));
             }

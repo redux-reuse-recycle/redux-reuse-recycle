@@ -1,11 +1,11 @@
 import Tokenizer from "../../src/Tokenizer";
-import ProgramFile from "./ProgramFile";
+import Program from "./ProgramFile";
 import { readdir, readFile } from "fs";
 
 export default class TestFactory {
 
   // Reads all FloScript programs in the given directory.
-  public static async readPrograms(directory: string): Promise<ProgramFile[]> {
+  public static async readPrograms(directory: string): Promise<Program[]> {
     return new Promise((resolve, reject) => {
       readdir(directory, async (error, files) => {
         try {
@@ -20,11 +20,11 @@ export default class TestFactory {
   }
 
   // Reads the FloScript program at the given file.
-  public static async readProgram(file: string): Promise<ProgramFile> {
+  public static async readProgram(file: string): Promise<Program> {
     return new Promise((resolve, reject) => {
       readFile(file, (error, contents) => {
         if (error) reject(error);
-        resolve(new ProgramFile(file, new Tokenizer(contents.toString())));
+        resolve(new Program(file, new Tokenizer(contents.toString())));
       });
     });
   }

@@ -1,15 +1,43 @@
 import 'mocha';
-import { expect } from "chai";
+import { VALID_PROGRAMS, INVALID_PARSE_PROGRAMS } from "./utils/Constants";
+
 import TestFactory from './utils/TestFactory';
+import ParserVisitor from '../src/visitor/ParserVisitor';
+import { fail } from 'assert';
+import ParseError from '../src/errors/ParseError';
 
-describe("Parser", () => {
+describe("Parse", function () {
+  before(async function () {
+    const [validPrograms, invalidPrograms] = await Promise.all([
+      TestFactory.readPrograms(VALID_PROGRAMS),
+      TestFactory.readPrograms(INVALID_PARSE_PROGRAMS)
+    ]);
 
-  it("Should successfully parse all valid .flo files", async () => {
-    return TestFactory.readPrograms("/Users/gregory_gzik/src/flowscript/test/resources/valid")
-      .then((programs) => programs.map((program) => console.log(program.fileName)));
+
+    describe("Parsing Valid FloScript Files", () => {
+      validPrograms.forEach((program) => {
+        it(`${program.fileName}`, () => {
+          new ParserVisitor(program.program).parse();
+        });
+      })
+    });
+
+    describe("Parsing Invalid FloScript Files", () => {
+      invalidPrograms.forEach((program) => {
+        it(`${program.fileName}`, () => {
+          try {
+            new ParserVisitor(program.program).parse();
+            fail("The program successfully parsed! WHY!?!?!")
+          }
+          catch (error) {
+            if (!(error instanceof ParseError)) {
+              throw error;
+            }
+          }
+        })
+      });
+    });
   });
 
-  it("Should reject the parsing of all invalid .flo files", () => {
-
-  });
-})
+  it("It successfully parses a FloScript File", async () => {});
+});
