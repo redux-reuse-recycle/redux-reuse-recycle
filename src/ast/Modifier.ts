@@ -1,13 +1,12 @@
 import ASTNode from "./ASTNode";
-import Action from "./Action";
-import Value from "./Value";
 import ASTVisitor from "../visitor/ASTVisitor";
+import Identifier from "./Identifier";
 
 export default class Modifier extends ASTNode {
-    public readonly actions: Action[];
-    public readonly values: Value[];
+    public readonly actions: Identifier[];
+    public readonly values: Identifier[];
 
-    constructor(actions: Action[], values: Value[]) {
+    constructor(actions: Identifier[], values: Identifier[]) {
         super();
         this.actions = actions;
         this.values = values;
