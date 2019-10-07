@@ -1,6 +1,7 @@
 import * as AST from "../ast";
 import Tokenizer from "../Tokenizer";
 import SymbolTable from "../symbol_table/SymbolTable";
+import ParseError from "../errors/ParseError";
 
 export default class ParserVisitor {
     private tokenizer: Tokenizer;
@@ -111,7 +112,7 @@ export default class ParserVisitor {
                 return new AST.ArrayType(new AST.JSType);
             }
             default: {
-                throw new Error("Unexpected token " + type);
+                throw new ParseError("Unexpected token " + type);
             }
         }
     }
@@ -124,7 +125,7 @@ export default class ParserVisitor {
         if(this.isIdentifier(id)){
             return new AST.Identifier(id);
         }
-        throw new Error("Invalid identifier: " + id);
+        throw new ParseError("Invalid identifier: " + id);
     }
 
     private isIdentifier(id: string): boolean {
@@ -134,7 +135,7 @@ export default class ParserVisitor {
     parseValue(): AST.Value {
         let top = this.tokenizer.top();
         if(top != null){
-            throw new Error("Unexpected end of file.")
+            throw new ParseError("Unexpected end of file.")
         } else if (top!.startsWith('{')){
             return this.parseFlow();
         } else if(this.checkActionType()){
@@ -151,7 +152,7 @@ export default class ParserVisitor {
     parsePrimitive(): AST.Primitive {
         let val = this.tokenizer.pop();
         if(val === null) {
-            throw new Error("Unexpected end of file.");
+            throw new ParseError("Unexpected end of file.");
         }
         return this.parsePrimitiveHelper(val);
     }
@@ -193,7 +194,7 @@ export default class ParserVisitor {
 
             return new AST.Array(this.currentType, array);
         } else {
-            throw new Error("");
+            throw new ParseError("");
         }
     }
     
@@ -224,7 +225,7 @@ export default class ParserVisitor {
             this.tokenizer.pop();
             return new AST.StubClass();
         } else {
-            throw new Error("Unexpected Action class: " + this.tokenizer.pop());
+            throw new ParseError("Unexpected Action class: " + this.tokenizer.pop());
         }
     }
 
@@ -242,7 +243,7 @@ export default class ParserVisitor {
         this.tokenizer.popAndCheck("{");
 
         if (this.tokenizer.top() == null) {
-            throw new Error("Unexpected end of file.");
+            throw new ParseError("Unexpected end of file.");
         } else if (this.isIdentifier(this.tokenizer.top()!)) {
             modifiers.push(this.parseModifier());
         } else {
@@ -283,7 +284,4 @@ export default class ParserVisitor {
             this.tokenizer.pop();
         }
     }
-
-
->>>>>>> Implement parser
 }
