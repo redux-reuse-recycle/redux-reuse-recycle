@@ -16,4 +16,8 @@ export default abstract class Primitive extends Value {
 
     abstract acceptPrimitiveVisitor(visitor: PrimitiveVisitor): any;
 
+    toString(): string {
+        return this.value.toString()
+    }
+
 }
