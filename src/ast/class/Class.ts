@@ -6,10 +6,18 @@ export default abstract class Class extends ASTNode {
     public readonly expectedParams: Map<string, string>;
     public readonly canModify: string[];
 
+    protected constructor(expectedParams: Map<string, string>, canModify: string[]) {
+        super();
+        this.expectedParams = expectedParams;
+        this.canModify = canModify;
+    }
+
     acceptASTVisitor(visitor: ASTVisitor): any {
         return visitor.visitClass(this);
     }
 
     abstract acceptPrimitiveVisitor(visitor: ClassVisitor): any;
+
+    abstract toString(): string;
 
 }

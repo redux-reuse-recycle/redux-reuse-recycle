@@ -15,6 +15,10 @@ class ReducerNode extends AbstractNode {
         this.variables.push(reducerVariable);
     }
 
+    public setReducerVariables(reducerVariables: ReducerVariableInterface[]) {
+        this.variables = reducerVariables;
+    }
+
     public acceptVisitor(visitor: IRVisitor) {
         visitor.visitReducerNode(this);
     }
