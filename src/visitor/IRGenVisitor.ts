@@ -11,21 +11,23 @@ import ServiceNode from "../codegen/ir/ServiceNode";
 
 export default class IRGenVisitor extends DefaultASTVisitor {
 
-    private table: SymbolTable;
-    private currentReducer?: ReducerNode;
-    private actions: ActionInterface[];
-    private serviceCases: ServiceCaseInterface[];
-    private programNode: ProgramNode;
+    private readonly table: SymbolTable;
+    private readonly programNode: ProgramNode;
+    private readonly actions: ActionInterface[];
+    private readonly serviceCases: ServiceCaseInterface[];
     private currentDeclarationName: string;
 
     constructor(table: SymbolTable) {
         super();
         this.table = table;
-        this.currentReducer = undefined;
         this.actions = [];
         this.serviceCases = [];
         this.programNode = new ProgramNode();
         this.currentDeclarationName = "";
+    }
+
+    getProgramNode(): ProgramNode {
+        return this.programNode;
     }
 
     visitProgramFile(programFile: AST.ProgramFile): any {
