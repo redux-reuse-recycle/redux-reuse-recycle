@@ -1,4 +1,5 @@
 import ParseError from "./errors/ParseError";
+import Logger from "./utils/Logger";
 
 export default class Tokenizer {
 
@@ -11,7 +12,9 @@ export default class Tokenizer {
         this.currentTokenIdx = 0;
         this.line = 1;
         this.column = 0;
-        this.tokens = program.split('\n').join(' NEW_LINE ').match(/\S+/g) || [];
+        this.tokens = program.replace(/;/g, ' ; ').replace(/\(/g, ' ( ')
+            .replace(/\)/g, ' ) ')
+            .split('\n').join(' NEW_LINE ').match(/\S+/g) || [];
     }
 
     public top(): string | null {
@@ -34,6 +37,7 @@ export default class Tokenizer {
             let token = this.tokens[this.currentTokenIdx];
             this.currentTokenIdx++;
             this.column++;
+            Logger.Log("Consume "+token);
             return token;
         }
         throw new ParseError("Unexpected end of file.");
@@ -42,12 +46,14 @@ export default class Tokenizer {
     public popAndCheck(val: string): void {
         let token = this.pop();
         if (token != val){
-            throw new ParseError("Unexpected token " + token);
+            throw new ParseError("Unexpected token " + token + " in line " + this.line);
         }
     }
 
-    public replaceInToken(search: string | RegExp, replace: string): void {
+    public replaceInToken(search: string | RegExp, replace: string): boolean {
+        let subs = this.top()!.search(search);
         this.tokens[this.currentTokenIdx] = this.top()!.replace(search, replace)
+        return subs > -1;
     }
 
     public hasNext(): boolean {

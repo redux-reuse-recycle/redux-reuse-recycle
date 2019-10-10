@@ -4,9 +4,9 @@ action TOGGLE_PURCHASE_MODAL = toggle()
 
 flow MODALS = {
     boolean isLoginModalOpen = false;
-    boolean isSignupModalOpen = false;
+    boolean isSignupModalOpen = false
     boolean isPurchaseModalOpen = false
     TOGGLE_LOGIN_MODAL >> isLoginModalOpen;
-    TOGGLE_SIGNUP_MODAL >> isSignupModalOpen;
+    TOGGLE_SIGNUP_MODAL >> isSignupModalOpen
     TOGGLE_PURCHASE_MODAL >> isPurchaseModalOpen
 }
