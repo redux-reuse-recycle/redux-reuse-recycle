@@ -11,7 +11,7 @@ describe("TypeChecker", function () {
   const typecheck = (program: Tokenizer) => {
     const parser = new ParserVisitor(program);
     const ast = parser.parse();
-    new TypeCheckVisitor(parser.getSymbolTable()).typecheck(ast);
+    new TypeCheckVisitor().typecheck(ast);
   }
 
   before(async function () {

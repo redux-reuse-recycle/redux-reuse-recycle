@@ -3,24 +3,18 @@ import Tokenizer from "../Tokenizer";
 import SymbolTable from "../symbol_table/SymbolTable";
 import ParseError from "../errors/ParseError";
 import Logger from "../utils/Logger";
+import AnyType from "../ast/type/AnyType";
 
 export default class ParserVisitor {
     private tokenizer: Tokenizer;
-    private symbolTable: SymbolTable;
     private currentDeclarationID?: string;
-    private currentType?: AST.Type;
 
     constructor(tkn: Tokenizer) {
         this.tokenizer = tkn;
-        this.symbolTable = new SymbolTable();
     }
 
     parse(): AST.ASTNode {
         return this.parseProgramFile();
-    }
-
-    getSymbolTable(): SymbolTable{
-        return this.symbolTable;
     }
     
     parseProgramFile(): AST.ProgramFile
@@ -30,12 +24,8 @@ export default class ParserVisitor {
 
         while(this.tokenizer.top() === "import"){
             imports.push(this.parseImportStatement());
-            // Logger.Log("Next token: " + this.tokenizer.top());
-            // Logger.Log(Boolean(this.tokenizer.top() === "import").toString());
         }
         Logger.Log("Done imports");
-        // Logger.Log("Next token: " + this.tokenizer.top());
-        // Logger.Log(Boolean(this.tokenizer.top() === "import").toString());
 
         while(this.tokenizer.hasNext()){
             declarations.push(this.parseDeclaration());
@@ -55,11 +45,10 @@ export default class ParserVisitor {
         return new AST.ImportStatement(filePath, id);
     }
 
-    parseDeclaration(fromFlow?: string): AST.Declaration {
+    parseDeclaration(): AST.Declaration {
         let type = this.parseType();
         let id = this.parseIdentifier();
         this.currentDeclarationID = id.name;
-        this.currentType = type;
 
         let value: AST.Value;
         if(this.tokenizer.top() == "=")
@@ -72,21 +61,6 @@ export default class ParserVisitor {
 
         this.optionalSemiColon();
         this.currentDeclarationID = undefined;
-        this.currentType = undefined;
-
-        let st: SymbolTable;
-        if(fromFlow == null) {
-            st = this.symbolTable;
-        } else {
-            st = this.symbolTable.accessFlow(fromFlow);
-        }
-
-        // Flows are defined in the flow parsing so that their declarations have a symboltable to go into.
-        if(value instanceof AST.Action){
-            st.defineAction(id.name, value);
-        } else if (value instanceof AST.Primitive || value instanceof AST.Identifier){
-            st.defineValueConstant(id.name, value);
-        }
 
         return new AST.Declaration(type, id, value);
     }
@@ -233,7 +207,7 @@ export default class ParserVisitor {
             }
 
             this.optionalSemiColon();
-            return new AST.Array(this.currentType!, array);
+            return new AST.Array(this.typeFromVal(array[0]), array);
         } else if(!isNaN(Number(val))){
             return new AST.Number(Number(val));
         } else if(val.startsWith("'")){ // single quote string
@@ -256,7 +230,28 @@ export default class ParserVisitor {
             throw new ParseError(val);
         }
     }
-    
+
+    private typeFromVal(val: AST.Primitive): AST.Type {
+        switch(typeof val){
+            case typeof AST.JS: {
+                return new AST.JSType();
+            }
+            case typeof AST.Number: {
+                return new AST.NumberType();
+            }
+            case typeof AST.String: {
+                return new AST.StringType();
+            }
+            case typeof AST.Boolean: {
+                return new AST.BooleanType();
+            }
+            default: {
+                return new AnyType();
+            }
+
+        }
+    }
+
     parseAction(): AST.Action {
         Logger.Log("Parse action: "+this.tokenizer.top());
         let clss = this.parseActionClass();
@@ -303,7 +298,6 @@ export default class ParserVisitor {
         let declarations: AST.Declaration[] = [];
 
         this.tokenizer.popAndCheck("{");
-        this.symbolTable.defineFlow(this.currentDeclarationID!);
 
         while(this.tokenizer.top() != '}')
         {
@@ -311,7 +305,7 @@ export default class ParserVisitor {
                 throw new ParseError("Unexpected end of file.");
             } else if (this.tokenizer.lineContains("=") || this.isType(this.tokenizer.top()!)) {
                 // keep the name of the flow as a state variable in parser to avoid threading it as a parameter excessively
-                declarations.push(this.parseDeclaration(this.currentDeclarationID));
+                declarations.push(this.parseDeclaration());
             } else {
                 modifiers.push(this.parseModifier());
             }
