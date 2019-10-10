@@ -34,6 +34,21 @@ flow MY_FLOW_NAME {
 > npm install
 ```
 
+## Test
+```
+// Run all tests
+> npm test
+
+// Run a test for a single file
+> npm run test-file <Path to file>
+
+// Run all parser tests
+> npm run test-parse
+
+// Run all typechecker tests
+> npm run test-typecheck
+```
+
 ## Authors
 - Gina Bolognesi
 - Jeffrey Doyle

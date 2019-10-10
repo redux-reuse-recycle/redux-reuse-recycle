@@ -8,7 +8,10 @@
     "dev": "ts-node src",
     "build": "npx rollup -c",
     "prepublish": "npm run build",
-    "test": "mocha -r ts-node/register ./test/*"
+    "test": "mocha -r ts-node/register ./test/*",
+    "test-file": "mocha -r ts-node/register ./test/File.spec.ts --",
+    "test-parse": "mocha -r ts-node/register ./test/Parser.spec.ts",
+    "test-typecheck": "mocha -r ts-node/register ./test/TypeCheck.spec.ts"
   },
   "keywords": [
     "redux",
