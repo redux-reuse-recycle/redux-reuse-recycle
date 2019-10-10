@@ -12,4 +12,5 @@ export default class String extends Primitive {
 
     toString(): string {
         return `"${this.value}"`;
+    }
 }

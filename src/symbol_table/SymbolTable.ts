@@ -1,6 +1,5 @@
 import {Action, Flow} from "../ast";
 import Value from "../ast/Value";
-import FlowSymbolTable from "./FlowSymbolTable";
 import Identifier from "../ast/Identifier";
 import ParseError from "../errors/ParseError";
 
@@ -60,7 +59,7 @@ export default class SymbolTable {
         }
     }
 
-    public defineFlow(name: string, flow: Flow): void {
+    public defineFlow(name: string): void {
         // Check for membership
         if(this.valueConstants.has(name)){
             throw new ParseError(name + " is already defined.");
@@ -104,4 +103,20 @@ export default class SymbolTable {
         }
 
     }
+}
+
+export class FlowSymbolTable extends SymbolTable {
+
+    public defineFlow(name: string): void {
+        throw new ParseError("Nested flows are not supported.");
+    }
+
+    public accessFlow(name: string): FlowSymbolTable {
+        throw new ParseError("Nested flows are not supported.");
+    }
+
+    public accessDefinitionFromFlow(varName: string, flowName:string): Value{
+        throw new ParseError("Nested flows are not supported.");
+    }
+
 }
