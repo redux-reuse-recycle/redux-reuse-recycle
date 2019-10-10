@@ -30,7 +30,12 @@ export default class ParserVisitor {
 
         while(this.tokenizer.top() === "import"){
             imports.push(this.parseImportStatement());
+            // Logger.Log("Next token: " + this.tokenizer.top());
+            // Logger.Log(Boolean(this.tokenizer.top() === "import").toString());
         }
+        Logger.Log("Done imports");
+        // Logger.Log("Next token: " + this.tokenizer.top());
+        // Logger.Log(Boolean(this.tokenizer.top() === "import").toString());
 
         while(this.tokenizer.hasNext()){
             declarations.push(this.parseDeclaration());
@@ -41,6 +46,7 @@ export default class ParserVisitor {
     }
 
     parseImportStatement(): AST.ImportStatement {
+        Logger.Log("Parsing import");
         this.tokenizer.popAndCheck("import");
         let filePath = this.tokenizer.pop();
         this.tokenizer.popAndCheck("as");
@@ -205,13 +211,10 @@ export default class ParserVisitor {
     private parsePrimitiveHelper(val: string): AST.Primitive {
         if(val.startsWith("`")){
             // js type may contain spaces
-            if(!val.endsWith("`")){
-                let top = this.tokenizer.top();
-                while(top != null && !top.endsWith("`")){
-                    val += " ";
-                    val += this.tokenizer.pop();
-                }
+            while(!val.endsWith("`")){
+                val = val.concat(" ", this.tokenizer.pop());
             }
+
             this.optionalSemiColon();
             return new AST.JS(val);
         } else if(val.startsWith("[")) {
@@ -306,7 +309,7 @@ export default class ParserVisitor {
         {
             if (this.tokenizer.top() == null) {
                 throw new ParseError("Unexpected end of file.");
-            } else if (this.isType(this.tokenizer.top()!)) {
+            } else if (this.tokenizer.lineContains("=") || this.isType(this.tokenizer.top()!)) {
                 // keep the name of the flow as a state variable in parser to avoid threading it as a parameter excessively
                 declarations.push(this.parseDeclaration(this.currentDeclarationID));
             } else {
@@ -323,36 +326,43 @@ export default class ParserVisitor {
         let actionIDs: AST.Identifier[] = [];
         let varIDs: AST.Identifier[] = [];
 
-        while(this.tokenizer.top() != ">>"){
-            let input = this.tokenizer.pop().split(',');
-            input.forEach((token: string) => actionIDs.push(this.parseIdentifierHelper(token)));
+        if(this.tokenizer.top() == ">>"){
+            throw new ParseError("Modifies clauses must have an action on the left.");
+        }
+
+        while(this.tokenizer.top() != ">>" && this.tokenizer.top() != ";"){
+            this.parseCommaSepIDs(actionIDs);
         }
 
         // optional second half: modifies clause does not need to modify a variable
         if(this.tokenizer.top() == ">>"){
             this.tokenizer.popAndCheck(">>");
 
-            let val = this.tokenizer.pop();
-            let seq = val.split(',');
-            while(val.endsWith(',')){//this.tokenizer.top() != ';' && this.tokenizer.top() != '}' && !this.isType(this.tokenizer.top()!)){
-                if(seq[0].length > 0){
-                    varIDs.push(this.parseIdentifierHelper(seq.shift()!));
-                } else {
-                    // discard empty sub-tokens
-                    seq.shift();
-                }
-
-
-                if(seq.length == 0){
-                    val = this.tokenizer.pop();
-                    seq = val.split(',');
-                }
-            }
+            this.parseCommaSepIDs(varIDs);
         }
 
         this.optionalSemiColon();
 
         return new AST.Modifier(actionIDs, varIDs);
+    }
+
+    private parseCommaSepIDs(toList: AST.Identifier[]) {
+        let val = this.tokenizer.pop();
+        let seq = val.split(',');
+
+        while (val.endsWith(',')) {
+            if (seq[0].length > 0) {
+                toList.push(this.parseIdentifierHelper(seq.shift()!));
+            } else {
+                // discard empty sub-tokens
+                seq.shift();
+            }
+
+            if (seq.length == 0) {
+                val = this.tokenizer.pop();
+                seq = val.split(',');
+            }
+        }
     }
 
     private isType(token: string){

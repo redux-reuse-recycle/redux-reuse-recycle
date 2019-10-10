@@ -19,11 +19,26 @@ export default class Tokenizer {
 
     public top(): string | null {
         if (this.currentTokenIdx < this.tokens.length) {
+            // Skip comments
+            if (this.tokens[this.currentTokenIdx].startsWith('//')){
+                while('NEW_LINE' !== this.tokens[this.currentTokenIdx]){
+                    this.currentTokenIdx++;
+
+                    if(this.currentTokenIdx >= this.tokens.length){
+                        return null;
+                    }
+                }
+            }
+
             // Skip empty lines
             while ('NEW_LINE' === this.tokens[this.currentTokenIdx]) {
                 this.currentTokenIdx++;
                 this.line++;
                 this.column = 0;
+
+                if(this.currentTokenIdx >= this.tokens.length){
+                    return null;
+                }
             }
 
             return this.tokens[this.currentTokenIdx];
@@ -52,8 +67,23 @@ export default class Tokenizer {
 
     public replaceInToken(search: string | RegExp, replace: string): boolean {
         let subs = this.top()!.search(search);
-        this.tokens[this.currentTokenIdx] = this.top()!.replace(search, replace)
+        this.tokens[this.currentTokenIdx] = this.top()!.replace(search, replace);
         return subs > -1;
+    }
+
+    public lineContains(search: string): boolean{
+        let tempCounter = this.currentTokenIdx;
+        while('NEW_LINE' !== this.tokens[tempCounter]){
+            if(this.tokens[tempCounter] === search){
+                return true;
+            }
+            tempCounter++;
+
+            if(tempCounter >= this.tokens.length){
+                return false;
+            }
+        }
+        return false;
     }
 
     public hasNext(): boolean {

@@ -1,7 +1,8 @@
 action STUB_ACTION = stub();
 
 flow MY_FLOW = {
-    js myJs = `var test = {'obj': 'test'};`;
+    js myJs = `var test = {'obj': 'test'}`;
     boolean myBoolean = false;
     STUB_ACTION >> myBoolean;
 }
+
