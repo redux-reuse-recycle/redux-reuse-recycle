@@ -4,3 +4,5 @@ node_modules
 .idea/
 src/**/*.js
 test/**/*.js
+actions.js
+reducer.js
