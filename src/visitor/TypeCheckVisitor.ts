@@ -7,9 +7,9 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
     private table: SymbolTable;
     private currentFlowName?: string;
 
-    constructor(table: SymbolTable) {
+    constructor() {
         super();
-        this.table = table;
+        this.table = new SymbolTable();
         this.currentFlowName = undefined;
     }
 
@@ -39,6 +39,21 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
     }
 
     visitDeclaration(declaration: AST.Declaration): any {
+        let st: SymbolTable;
+        if(this.currentFlowName == null) {
+            st = this.table;
+        } else {
+            st = this.table.accessFlow(this.currentFlowName);
+        }
+
+        if(declaration.value instanceof AST.Action){
+            st.defineAction(declaration.id.name, declaration.value);
+        } else if(declaration.value instanceof AST.Flow){
+            st.defineFlow(declaration.id.name);
+        } else if (declaration.value instanceof AST.Primitive || declaration.value instanceof AST.Identifier){
+            st.defineValueConstant(declaration.id.name, declaration.value);
+        }
+
         // check that value matches declared type
         switch (typeof declaration.type){
             case typeof AST.ActionType: {

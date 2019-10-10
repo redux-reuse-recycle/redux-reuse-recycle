@@ -21,7 +21,7 @@ const testCase = {
       const program = await TestFactory.readProgram(file);
       const parser = new ParserVisitor(program.program);
       const ast = parser.parse();
-      new TypeCheckVisitor(parser.getSymbolTable()).typecheck(ast);
+      new TypeCheckVisitor().typecheck(ast);
     });
 
     // TODO: Test for CodeGen once Implemented.
