@@ -5,7 +5,7 @@ action ENOUGH_USERS_ONLINE = toggle();
 flow USERS = {
     string[] users = [];
     boolean enoughUsersOnline = false;
-    boolean ENOUGH_USERS_ONLINE;
+    action ENOUGH_USERS_ONLINE = toggle();
     GET_ALL_USERS >> users;
     UPDATE_USER >> users;
     ENOUGH_USERS_ONLINE >> enoughUsersOnline;

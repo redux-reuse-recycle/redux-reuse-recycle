@@ -1,13 +1,12 @@
 import * as AST from "../ast";
 import Tokenizer from "../Tokenizer";
-import SymbolTable from "../symbol_table/SymbolTable";
 import ParseError from "../errors/ParseError";
 import Logger from "../utils/Logger";
-import AnyType from "../ast/type/AnyType";
 
 export default class ParserVisitor {
     private tokenizer: Tokenizer;
     private currentDeclarationID?: string;
+    private lastType?: AST.Type;
 
     constructor(tkn: Tokenizer) {
         this.tokenizer = tkn;
@@ -49,6 +48,7 @@ export default class ParserVisitor {
         let type = this.parseType();
         let id = this.parseIdentifier();
         this.currentDeclarationID = id.name;
+        this.lastType = type;
 
         let value: AST.Value;
         if(this.tokenizer.top() == "=")
@@ -61,6 +61,7 @@ export default class ParserVisitor {
 
         this.optionalSemiColon();
         this.currentDeclarationID = undefined;
+        this.lastType = undefined;
 
         return new AST.Declaration(type, id, value);
     }
@@ -147,7 +148,7 @@ export default class ParserVisitor {
 
     private isReserved(id: string): boolean{
         return ['import', 'as', 'js', 'any', 'number', 'string', 'boolean', 'any[]', 'number[]', 'string[]', 'boolean[]',
-        'js[]', 'action', 'flow', 'network', 'toggle', 'counter', 'stub', '=', '>>'].indexOf(id) > -1;
+        'js[]', 'action', 'flow', 'network', 'toggle', 'counter', 'stub', '=', '>>', 'true', 'false'].indexOf(id) > -1;
     }
 
     parseValue(): AST.Value {
@@ -198,7 +199,11 @@ export default class ParserVisitor {
 
             while (input[0] != "]") {
                 Logger.Log(input.join(' '));
-                array.push(this.parsePrimitiveHelper(input.shift()!));
+                if(input[0].length > 0){
+                    array.push(this.parsePrimitiveHelper(input.shift()!));
+                } else {
+                    input.shift();
+                }
 
                 if (input.length == 0) {
                     // array type may contain spaces
@@ -207,7 +212,7 @@ export default class ParserVisitor {
             }
 
             this.optionalSemiColon();
-            return new AST.Array(this.typeFromVal(array[0]), array);
+            return new AST.Array((this.lastType! as AST.ArrayType).innerType, array);
         } else if(!isNaN(Number(val))){
             return new AST.Number(Number(val));
         } else if(val.startsWith("'")){ // single quote string
@@ -215,40 +220,19 @@ export default class ParserVisitor {
             while(!sArr[sArr.length-1].endsWith("'")){
                 sArr.push(this.tokenizer.pop())
             }
-            return new AST.String(sArr.join(" ").replace("'", ''));
+            return new AST.String(sArr.join(" ").replace(/'/g, ''));
         } else if(val.startsWith('"')){ // double quote string
             let sArr = [val];
             while(!sArr[sArr.length-1].endsWith('"')){
                 sArr.push(this.tokenizer.pop())
             }
-            return new AST.String(sArr.join(" ").replace('"', ''));
+            return new AST.String(sArr.join(" ").replace(/"/g, ''));
         } else if(/true/.test(val)){
             return new AST.Boolean(true);
         } else if(/false/.test(val)){
             return new AST.Boolean(false);
         } else {
             throw new ParseError(val);
-        }
-    }
-
-    private typeFromVal(val: AST.Primitive): AST.Type {
-        switch(typeof val){
-            case typeof AST.JS: {
-                return new AST.JSType();
-            }
-            case typeof AST.Number: {
-                return new AST.NumberType();
-            }
-            case typeof AST.String: {
-                return new AST.StringType();
-            }
-            case typeof AST.Boolean: {
-                return new AST.BooleanType();
-            }
-            default: {
-                return new AnyType();
-            }
-
         }
     }
 
@@ -342,21 +326,26 @@ export default class ParserVisitor {
 
     private parseCommaSepIDs(toList: AST.Identifier[]) {
         let val = this.tokenizer.pop();
-        let seq = val.split(',');
+        if (val.endsWith(',')){
+            let seq = val.split(',');
 
-        while (val.endsWith(',')) {
-            if (seq[0].length > 0) {
-                toList.push(this.parseIdentifierHelper(seq.shift()!));
-            } else {
-                // discard empty sub-tokens
-                seq.shift();
-            }
+            while (val.endsWith(',')) {
+                if (seq[0].length > 0) {
+                    toList.push(this.parseIdentifierHelper(seq.shift()!));
+                } else {
+                    // discard empty sub-tokens
+                    seq.shift();
+                }
 
-            if (seq.length == 0) {
-                val = this.tokenizer.pop();
-                seq = val.split(',');
+                if (seq.length == 0) {
+                    val = this.tokenizer.pop();
+                    seq = val.split(',');
+                }
             }
+        } else {
+            toList.push(this.parseIdentifierHelper(val));
         }
+
     }
 
     private isType(token: string){
