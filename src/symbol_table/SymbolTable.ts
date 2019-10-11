@@ -1,7 +1,9 @@
-import {Action, Flow} from "../ast";
+import {Action} from "../ast";
 import Value from "../ast/Value";
 import Identifier from "../ast/Identifier";
 import ParseError from "../errors/ParseError";
+import TypeCheckError from "../errors/TypeCheckError";
+import Logger from "../utils/Logger";
 
 export default class SymbolTable {
     valueConstants: Map<string, Value>;
@@ -17,18 +19,21 @@ export default class SymbolTable {
         this.flows = new Map();
     }
 
-    public defineValueConstant(name: string, value: any): void {
+    public defineValueConstant(name: string, value: Value): void {
         // Check for membership
         if(this.valueConstants.has(name)){
-            throw new ParseError(name + " is already defined.");
+            throw new TypeCheckError(name + " is already defined.");
         }
         this.valueConstants.set(name, value);
+
+        Logger.Log("Symboltable define " + name);
     }
 
     public accessValueConstant(name: string): Value {
         let val = this.valueConstants.get(name);
+        Logger.Log("Access " + name + ": " + val);
         if(val == null){
-            throw new ParseError("Unbound identifier: " + name);
+            throw new TypeCheckError("Unbound identifier: " + name);
         }
 
         if(val instanceof Identifier){
@@ -40,8 +45,8 @@ export default class SymbolTable {
 
     public defineAction(name: string, action: Action): void {
         // Check for membership
-        if(this.valueConstants.has(name)){
-            throw new ParseError(name + " is already defined.");
+        if(this.actions.has(name)){
+            throw new TypeCheckError(name + " is already defined.");
         }
         this.actions.set(name, action);
     }
@@ -49,7 +54,7 @@ export default class SymbolTable {
     public accessAction(name: string): Action {
         let val = this.actions.get(name);
         if(val == null){
-            throw new ParseError("Unbound identifier: " + name);
+            throw new TypeCheckError("Unbound identifier: " + name);
         }
 
         if(val instanceof Identifier){
@@ -61,16 +66,16 @@ export default class SymbolTable {
 
     public defineFlow(name: string): void {
         // Check for membership
-        if(this.valueConstants.has(name)){
-            throw new ParseError(name + " is already defined.");
+        if(this.flows.has(name)){
+            throw new TypeCheckError(name + " is already defined.");
         }
-        this.flows.set(name, new FlowSymbolTable());
+        this.flows.set(name, new FlowSymbolTable(this));
     }
 
     public accessFlow(name: string): FlowSymbolTable {
         let val = this.flows.get(name);
         if(val == null){
-            throw new ParseError("Unbound identifier: " + name);
+            throw new TypeCheckError("Unbound identifier: " + name);
         }
 
         if(val instanceof Identifier){
@@ -106,13 +111,53 @@ export default class SymbolTable {
 }
 
 export class FlowSymbolTable extends SymbolTable {
+    private parentTable: SymbolTable;
+
+    constructor(parent: SymbolTable) {
+        super();
+        this.parentTable = parent;
+    }
+
+    public defineValueConstant(name: string, value: Value): void {
+        // Check for membership
+        if (this.parentTable.valueConstants.has(name)) {
+            throw new TypeCheckError(name + " is already defined.");
+        }
+        super.defineValueConstant(name, value);
+    }
+
+    // what if we are in a flow table looking for an ID in global scope?
+    public accessValueConstant(name: string): Value {
+        try{
+            return super.accessValueConstant(name);
+        } catch(e){
+            return this.parentTable.accessValueConstant(name);
+        }
+    }
+
+    public defineAction(name: string, action: Action): void {
+        // Check for membership
+        if (this.parentTable.actions.has(name)) {
+            throw new TypeCheckError(name + " is already defined.");
+        }
+        super.defineAction(name, action);
+    }
+
+    // what if we are in a flow table looking for an ID in global scope?
+    public accessAction(name: string): Action {
+        try{
+            return super.accessAction(name);
+        } catch(e){
+            return this.parentTable.accessAction(name);
+        }
+    }
 
     public defineFlow(name: string): void {
-        throw new ParseError("Nested flows are not supported.");
+        throw new TypeCheckError("Nested flows are not supported.");
     }
 
     public accessFlow(name: string): FlowSymbolTable {
-        throw new ParseError("Nested flows are not supported.");
+        throw new TypeCheckError("Nested flows are not supported.");
     }
 
     public accessDefinitionFromFlow(varName: string, flowName:string): Value{

@@ -9,7 +9,7 @@ action UPDATE_USER = network(url = UpdateUrls.UPDATE_USER_URL, method = 'PUT');
 
 flow POSTS = {
     string[] posts = [];
-    js = Urls;
+    js buggy = Urls;
     GET_ALL_POSTS >> posts;
     DELETE_ALL_POSTS >> posts;
 }

@@ -1,12 +1,13 @@
 import ASTNode from "../ASTNode";
 import ASTVisitor from "../../visitor/ASTVisitor";
 import ClassVisitor from "../../visitor/class/ClassVisitor";
+import * as AST from "../";
 
 export default abstract class Class extends ASTNode {
-    public readonly expectedParams = new Map<string, string>();
-    public readonly canModify: string[] = [];
+    public readonly expectedParams = new Map<string, ((paramVal: AST.Value) => boolean) >();
+    public readonly canModify: ((paramVal: AST.Value) => boolean)[] = [];
 
-    protected constructor(expectedParams: Map<string, string>, canModify: string[]) {
+    protected constructor(expectedParams: Map<string, ((paramVal: AST.Value) => boolean) >, canModify: ((paramVal: AST.Value) => boolean) []) {
         super();
         this.expectedParams = expectedParams;
         this.canModify = canModify;
