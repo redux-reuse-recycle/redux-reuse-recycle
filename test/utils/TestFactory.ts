@@ -24,7 +24,7 @@ export default class TestFactory {
     return new Promise((resolve, reject) => {
       readFile(file, (error, contents) => {
         if (error) reject(error);
-        resolve(new Program(file, new Tokenizer(contents.toString())));
+        resolve(new Program(file, new Tokenizer(contents.toString(), file)));
       });
     });
   }

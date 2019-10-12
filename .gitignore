@@ -6,3 +6,4 @@ src/**/*.js
 test/**/*.js
 actions.js
 reducer.js
+.vscode
