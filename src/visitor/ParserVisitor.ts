@@ -1,3 +1,5 @@
+import { dirname } from "path";
+
 import * as AST from "../ast";
 import Tokenizer from "../Tokenizer";
 import ParseError from "../errors/ParseError";
@@ -15,7 +17,7 @@ export default class ParserVisitor {
     parse(): AST.ASTNode {
         return this.parseProgramFile();
     }
-    
+
     parseProgramFile(): AST.ProgramFile
     {
         let imports: AST.ImportStatement[] = [];
@@ -41,7 +43,7 @@ export default class ParserVisitor {
         this.tokenizer.popAndCheck("as");
         let id = this.parseIdentifier();
         this.optionalSemiColon();
-        return new AST.ImportStatement(filePath, id);
+        return new AST.ImportStatement(filePath, id, dirname(this.tokenizer.context));
     }
 
     parseDeclaration(): AST.Declaration {

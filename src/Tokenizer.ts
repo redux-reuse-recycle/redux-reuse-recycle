@@ -3,12 +3,16 @@ import Logger from "./utils/Logger";
 
 export default class Tokenizer {
 
+    // Represents the file path of the program.
+    public readonly context: string;
+
     private readonly tokens: string[];
     private currentTokenIdx: number;
     private line: number;
     private column: number;
 
-    constructor(program: string) {
+    constructor(program: string, filePath: string = "") {
+        this.context = filePath;
         this.currentTokenIdx = 0;
         this.line = 1;
         this.column = 0;

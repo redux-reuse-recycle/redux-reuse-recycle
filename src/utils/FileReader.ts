@@ -9,12 +9,15 @@ export default class FileReader {
         if (!this.openFiles.includes(filePath)) {
             this.openFiles.push(filePath);
             try {
-                fs.readFileSync(filePath).toString('utf-8');
+                return fs.readFileSync(filePath).toString('utf-8');
             } catch(err) {
                 Logger.Log(`Circular dependency ${filePath} detected`);
+                throw err;
             }
         } else {
-            Logger.Log(`Unable to load source: ${filePath}`)
+            const message = `Unable to load source: ${filePath}`;
+            Logger.Log(message);
+            throw new Error(message);
         }
     }
 
