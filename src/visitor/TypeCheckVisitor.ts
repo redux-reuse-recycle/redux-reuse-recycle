@@ -6,7 +6,7 @@ import Logger from "../utils/Logger";
 import TypeCheckPrimitiveVisitor from "./primitive/TypeCheckPrimitiveVisitor";
 
 export default class TypeCheckVisitor extends DefaultASTVisitor {
-    private table: SymbolTable;
+    private readonly table: SymbolTable;
     private currentFlowName?: string;
 
     constructor() {
@@ -23,6 +23,10 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
         else {
             throw new TypeCheckError("Given AST is not a Program File!");
         }
+    }
+
+    getSymbolTable(): SymbolTable {
+        return this.table;
     }
 
     visitAction(action: AST.Action): any {

@@ -41,19 +41,19 @@ export default class IRGenVisitor extends DefaultASTVisitor {
     }
 
     visitImportStatement(importStatement: AST.ImportStatement): any {
-        importStatement.file.acceptASTVisitor(this);
+        (<AST.ProgramFile>importStatement.file).acceptASTVisitor(this);
     }
 
     visitDeclaration(declaration: AST.Declaration): any {
-        let oldDeclerationName: string = this.currentDeclarationName;
+        const oldDeclerationName: string = this.currentDeclarationName;
         this.currentDeclarationName = declaration.id.name;
         declaration.value.acceptASTVisitor(this);
         this.currentDeclarationName = oldDeclerationName;
     }
 
     visitAction(action: AST.Action): any {
-        let actionClass: AST.Class = action.clss;
-        let actionInterface: ActionInterface = {
+        const actionClass: AST.Class = action.clss;
+        const actionInterface: ActionInterface = {
             type: this.currentDeclarationName,
             actionNode: 'default',
             actionClass: actionClass.toString(),
@@ -71,7 +71,7 @@ export default class IRGenVisitor extends DefaultASTVisitor {
                     method = p.value.acceptASTVisitor(this);
                 }
             });
-            let serviceCase: ServiceCaseInterface = {
+            const serviceCase: ServiceCaseInterface = {
                 type: this.currentDeclarationName,
                 url: url,
                 method: method
@@ -84,15 +84,15 @@ export default class IRGenVisitor extends DefaultASTVisitor {
     }
 
     visitFlow(flow: AST.Flow): any {
-        let reducerNode = new ReducerNode(this.currentDeclarationName);
-        let variables: ReducerVariableInterface[] = [];
+        const reducerNode = new ReducerNode(this.currentDeclarationName);
+        const variables: ReducerVariableInterface[] = [];
 
         flow.declarations.forEach((d) => {
             if (d.value instanceof AST.Action) {
-                let actionInterface: ActionInterface = d.acceptASTVisitor(this);
+                const actionInterface: ActionInterface = d.acceptASTVisitor(this);
                 actionInterface.actionNode = this.currentDeclarationName;
             } else {
-                let variable: ReducerVariableInterface = {
+                const variable: ReducerVariableInterface = {
                     variableName: d.id.name,
                     initialValue: (<AST.Primitive>this.table.accessDefinitionFromFlow(
                         d.id.name, this.currentDeclarationName)).toString(),
@@ -121,7 +121,7 @@ export default class IRGenVisitor extends DefaultASTVisitor {
                 }
 
                 m.values.forEach((value) => {
-                    let variable = <ReducerVariableInterface>variables.find((v) => {
+                    const variable = <ReducerVariableInterface>variables.find((v) => {
                         return v.variableName === value.name;
                     });
                     variable.modifiedBy.push(<ActionInterface>action);
@@ -142,15 +142,15 @@ export default class IRGenVisitor extends DefaultASTVisitor {
     }
 
     private constructNodes(name: string): void {
-        let actionsNode = new ActionsNode(name);
-        let serviceNode = new ServiceNode(name);
+        const actionsNode = new ActionsNode(name);
+        const serviceNode = new ServiceNode(name);
 
-        let actions: ActionInterface[] = this.actions.filter((a) => {
+        const actions: ActionInterface[] = this.actions.filter((a) => {
             return a.actionNode === name;
         });
         actions.forEach((a) => {
             actionsNode.addAction(a);
-            let service = this.serviceCases.find((s) => {
+            const service = this.serviceCases.find((s) => {
                 return s.type === a.type;
             });
             if (service) {

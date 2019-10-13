@@ -1,16 +1,16 @@
 import { join } from "path";
 import { dirname } from "path";
 
-import ASTNode from "./ASTNode";
 import Identifier from "./Identifier";
 import ASTVisitor from "../visitor/ASTVisitor";
 import Main from "../Main";
 import FileReader from "../utils/FileReader";
+import * as AST from "./index";
 
-export default class ImportStatement extends ASTNode {
+export default class ImportStatement extends AST.ASTNode {
     public readonly filePath: string;
     public readonly id: Identifier;
-    public file?: ASTNode;
+    public file?: AST.ProgramFile;
 
     // The fileContext represents the directory from which to parse the import file.
     constructor(filePath: string, id: Identifier) {

@@ -15,7 +15,7 @@ export default class ParserVisitor {
         this.fileReader  = fileReader;
     }
 
-    parse(): AST.ASTNode {
+    parse(): AST.ProgramFile {
         return this.parseProgramFile();
     }
 
