@@ -1,4 +1,4 @@
-import './UrlsImport';
+import '../../valid/UrlsImport';
 
 action STUB_ACTION = stub();
 

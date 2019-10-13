@@ -37,7 +37,7 @@ describe("TypeChecker", function () {
             fail("The program successfully typechecked! WHY!?!?!")
           }
           catch (error) {
-            if (!(error instanceof TypeCheckError)) {
+            if (!(error.name == TypeCheckError.NAME)) {
               throw error;
             }
           }
