@@ -12,6 +12,8 @@ export default class SymbolTable {
     actions: Map<string, Action>;
     // flow name -> flow metadata
     flows: Map<string, FlowSymbolTable>;
+    // All the IDs used for importing.
+    importIDs: string[] = [];
 
     constructor() {
         this.valueConstants = new Map();
@@ -19,11 +21,33 @@ export default class SymbolTable {
         this.flows = new Map();
     }
 
+    // Merges the other symbol table into this one with the prefixID for each ID.
+    public mergeSymbolTables(otherSymbolTable: SymbolTable, prefixID: string) {
+        const newKey = (key: string) => `${prefixID}.${key}`;
+        this.importIDs.push(prefixID);
+
+        otherSymbolTable.valueConstants.forEach((value, key, _) =>
+            this.defineValueConstant(newKey(key), value)
+        );
+
+        otherSymbolTable.actions.forEach((value, key, _) =>
+            this.defineAction(newKey(key), value)
+        );
+
+        otherSymbolTable.flows.forEach((value, key, _) =>
+            this.defineFlow(newKey(key), value)
+        );
+    }
+
     public defineValueConstant(name: string, value: Value): void {
-        // Check for membership
+        if (this.importIDs.includes(name)) {
+            throw new TypeCheckError(`Cannot shadow import name ${name}`);
+        }
+
         if(this.valueConstants.has(name)){
             throw new TypeCheckError(name + " is already defined.");
         }
+
         this.valueConstants.set(name, value);
 
         Logger.Log("Symboltable define " + name);
@@ -44,11 +68,7 @@ export default class SymbolTable {
     }
 
     public defineAction(name: string, action: Action): void {
-        // Check for membership
-        if(this.actions.has(name)){
-            throw new TypeCheckError(name + " is already defined.");
-        }
-        this.actions.set(name, action);
+        if (this.keyIsUnique(name, this.actions)) this.actions.set(name, action);
     }
 
     public accessAction(name: string): Action {
@@ -64,12 +84,8 @@ export default class SymbolTable {
         }
     }
 
-    public defineFlow(name: string): void {
-        // Check for membership
-        if(this.flows.has(name)){
-            throw new TypeCheckError(name + " is already defined.");
-        }
-        this.flows.set(name, new FlowSymbolTable(this));
+    public defineFlow(name: string, symbolTable = new FlowSymbolTable(this)): void {
+        if (this.keyIsUnique(name, this.flows)) this.flows.set(name, symbolTable);
     }
 
     public accessFlow(name: string): FlowSymbolTable {
@@ -106,7 +122,25 @@ export default class SymbolTable {
         } catch (e){
             return this.accessAction(varName);
         }
+    }
 
+    public getImportIDs() {
+        return this.importIDs.slice();
+    }
+
+    protected keyIsUnique(id: string, map: Map<string, Action | FlowSymbolTable>): boolean {
+        const idAfterDot = id.split('.');
+        const importID = idAfterDot.slice().pop();
+
+        if (map.has(id)) throw new TypeCheckError(`${id} is already defiend!`);
+
+        if (this.importIDs.includes(id)) throw new TypeCheckError(`Cannot shadow import name ${id}`);
+
+        map.forEach((value, key, _) => {
+            if (key === importID) throw new TypeCheckError(`${id} is already defined in import: ${idAfterDot[0]}`);
+        });
+
+        return true;
     }
 }
 
@@ -120,6 +154,10 @@ export class FlowSymbolTable extends SymbolTable {
 
     public defineValueConstant(name: string, value: Value): void {
         // Check for membership
+        if (this.parentTable.getImportIDs().includes(name)) {
+            throw new TypeCheckError(`Cannot shadow import name ${name}`);
+        }
+
         if (this.parentTable.valueConstants.has(name)) {
             throw new TypeCheckError(name + " is already defined.");
         }
@@ -136,11 +174,7 @@ export class FlowSymbolTable extends SymbolTable {
     }
 
     public defineAction(name: string, action: Action): void {
-        // Check for membership
-        if (this.parentTable.actions.has(name)) {
-            throw new TypeCheckError(name + " is already defined.");
-        }
-        super.defineAction(name, action);
+        if (super.keyIsUnique(name, this.parentTable.actions)) super.defineAction(name, action);
     }
 
     // what if we are in a flow table looking for an ID in global scope?

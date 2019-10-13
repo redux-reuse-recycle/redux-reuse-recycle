@@ -1,5 +1,5 @@
-import './UrlsImport' as Urls;
-import './UpdateUrlsImport' as UpdateUrls;
+import '../../valid/UrlsImport' as Urls;
+import '../../valid/UpdateUrlsImport' as UpdateUrls;
 
 string Urls = '/urls';
 

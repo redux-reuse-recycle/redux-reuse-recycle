@@ -208,7 +208,11 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
     }
 
     visitImportStatement(importStatement: AST.ImportStatement): any {
-        importStatement.file.acceptASTVisitor(this);
+        if (!importStatement.file) return;
+
+        let importBindings = new TypeCheckVisitor();
+        importStatement.file.acceptASTVisitor(importBindings);
+        this.table.mergeSymbolTables(importBindings.table, importStatement.id.name);
     }
 
 //   identifier, type, class, primitive nodes have no typechecking

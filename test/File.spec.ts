@@ -29,7 +29,7 @@ const testCase = {
   }
 };
 
-if (FileSystem.existsSync(file)) {
+if (FileSystem.existsSync(file) && FileSystem.statSync(file).isFile()) {
   describe(testCase.title, testCase.body);
 }
 else {
