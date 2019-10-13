@@ -14,12 +14,12 @@ const testCase = {
   body: () => {
     it("Should Pass Parsing", async () => {
       const program = await TestFactory.readProgram(file)
-      new ParserVisitor(program.program).parse();
+      new ParserVisitor(program).parse();
     });
 
     it("Should Pass TypeChecking", async () => {
       const program = await TestFactory.readProgram(file);
-      const parser = new ParserVisitor(program.program);
+      const parser = new ParserVisitor(program);
       const ast = parser.parse();
       new TypeCheckVisitor().typecheck(ast);
     });

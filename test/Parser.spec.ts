@@ -16,17 +16,17 @@ describe("Parse", function () {
 
     describe("Parsing Valid FloScript Files", () => {
       validPrograms.forEach((program) => {
-        it(`${program.fileName}`, () => {
-          new ParserVisitor(program.program).parse();
+        it(`${program.context}`, () => {
+          new ParserVisitor(program).parse();
         });
       })
     });
 
     describe("Parsing Invalid FloScript Files", () => {
       invalidPrograms.forEach((program) => {
-        it(`${program.fileName}`, () => {
+        it(`${program.context}`, () => {
           try {
-            new ParserVisitor(program.program).parse();
+            new ParserVisitor(program).parse();
             fail("The program successfully parsed! WHY!?!?!")
           }
           catch (error) {

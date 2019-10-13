@@ -1,22 +1,27 @@
 import { join } from "path";
+import { dirname } from "path";
 
 import ASTNode from "./ASTNode";
 import Identifier from "./Identifier";
 import ASTVisitor from "../visitor/ASTVisitor";
 import Main from "../Main";
+import FileReader from "../utils/FileReader";
 
 export default class ImportStatement extends ASTNode {
     public readonly filePath: string;
     public readonly id: Identifier;
-    public readonly file: ASTNode;
+    public file?: ASTNode;
 
     // The fileContext represents the directory from which to parse the import file.
-    constructor(filePath: string, id: Identifier, fileContext: string = ".") {
+    constructor(filePath: string, id: Identifier) {
         super();
         this.filePath = filePath;
         this.id = id;
+    }
 
-        this.file = Main.parse(this.getCanonicalFilePath(fileContext));
+    parseImportFile(fileContext: string, fileReader: FileReader): void {
+        const importFileReader = new FileReader(fileReader.openedFiles);
+        this.file = Main.parse(this.getCanonicalFilePath(fileContext), importFileReader);
     }
 
     acceptASTVisitor(visitor: ASTVisitor): any {
@@ -26,6 +31,6 @@ export default class ImportStatement extends ASTNode {
     // Gets the file path with respect to the FloScript parsing execution.
     private getCanonicalFilePath(fileContext: string) {
         const parsedPath = this.filePath.slice(1, this.filePath.length - 1) + ".flo";
-        return join(fileContext, parsedPath);
+        return join(dirname(fileContext), parsedPath);
     }
 }

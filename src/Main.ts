@@ -14,10 +14,10 @@ export default class Main {
     // TODO: Connect AST to CodeGen
   }
 
-  public static parse(filePath: string): ASTNode {
-    const programText = FileReader.ReadProgram(filePath);
+  public static parse(filePath: string, fileReader: FileReader = new FileReader()): ASTNode {
+    const programText = fileReader.ReadProgram(filePath);
     const tokenizer = new Tokenizer(programText, filePath);
-    return new ParserVisitor(tokenizer).parse();
+    return new ParserVisitor(tokenizer, fileReader).parse();
   }
 
   public static typecheck(ast: ASTNode): ASTNode {

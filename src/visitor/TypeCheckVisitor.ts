@@ -34,7 +34,7 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
             throw new TypeCheckError("Action has incorrect number of parameters. Expected " + action.clss.expectedParams.size + " but received " + actualTypes.size);
         }
 
-        for (let param of action.clss.expectedParams.keys()){
+        action.clss.expectedParams.forEach((_, param) => {
             // expectedParams is a map from string to lambda checking is a value is appropriate
             let fn = action.clss.expectedParams.get(param);
             let actual = actualTypes.get(param);
@@ -42,7 +42,7 @@ export default class TypeCheckVisitor extends DefaultASTVisitor {
             {
                 throw new TypeCheckError(param + " expected a value of type " + action.clss.expectedParams.get(param) + ", got " + actualTypes.get(param));
             }
-        }
+        });
     }
 
     visitDeclaration(declaration: AST.Declaration): any {
