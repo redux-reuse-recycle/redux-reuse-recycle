@@ -1,2 +1,0 @@
-string POSTS_URL = '/posts';
-string USERS_URL = '/users';

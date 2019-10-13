@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import Logger from "./Logger";
+import ParseError from "../errors/ParseError";
 
 export default class FileReader {
 
@@ -10,6 +11,10 @@ export default class FileReader {
     }
 
     public ReadProgram(filePath: string): string {
+        if (!fs.existsSync(filePath)) {
+            throw new ParseError(`File ${filePath} does not exist!`);
+        }
+
         if (!this.openedFiles.includes(filePath)) {
             this.openedFiles.push(filePath);
             try {
@@ -19,9 +24,7 @@ export default class FileReader {
                 throw err;
             }
         } else {
-            const message = `Circular dependency ${filePath} detected`;
-            Logger.Log(message);
-            throw new Error(message);
+            throw new ParseError(`Circular dependency ${filePath} detected`);
         }
     }
 }

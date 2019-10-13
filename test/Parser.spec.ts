@@ -5,6 +5,9 @@ import TestFactory from './utils/TestFactory';
 import ParserVisitor from '../src/visitor/ParserVisitor';
 import { fail } from 'assert';
 import ParseError from '../src/errors/ParseError';
+import Logger from '../src/utils/Logger';
+
+Logger.LogToConsole = false;
 
 describe("Parse", function () {
   before(async function () {
@@ -30,7 +33,7 @@ describe("Parse", function () {
             fail("The program successfully parsed! WHY!?!?!")
           }
           catch (error) {
-            if (!(error instanceof ParseError)) {
+            if (!(error.name == ParseError.NAME)) {
               throw error;
             }
           }
