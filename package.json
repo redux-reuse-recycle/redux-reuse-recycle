@@ -7,7 +7,7 @@
     "start": "npm run dev",
     "dev": "ts-node src",
     "build": "npx rollup -c",
-    "tsc-build": "tsc src/**/*.ts",
+    "tsc-build": "tsc src/**/*.ts test/**/*.ts",
     "prepublish": "npm run build",
     "test": "mocha -r ts-node/register ./test/*",
     "test-file": "mocha -r ts-node/register ./test/File.spec.ts --",

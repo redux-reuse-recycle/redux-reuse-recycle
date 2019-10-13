@@ -23,17 +23,17 @@ describe("TypeChecker", function () {
 
     describe("Typechecking Valid FloScript Files", () => {
       validPrograms.forEach((program) => {
-        it(`${program.fileName}`, () => {
-          typecheck(program.program);
+        it(`${program.context}`, () => {
+          typecheck(program);
         });
       })
     });
 
     describe("Typechecking Invalid FloScript Files", () => {
       invalidPrograms.forEach((program) => {
-        it(`${program.fileName}`, () => {
+        it(`${program.context}`, () => {
           try {
-            typecheck(program.program);
+            typecheck(program);
             fail("The program successfully typechecked! WHY!?!?!")
           }
           catch (error) {

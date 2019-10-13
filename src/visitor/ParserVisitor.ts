@@ -1,17 +1,18 @@
-import { dirname } from "path";
-
 import * as AST from "../ast";
 import Tokenizer from "../Tokenizer";
 import ParseError from "../errors/ParseError";
 import Logger from "../utils/Logger";
+import FileReader from "../utils/FileReader";
 
 export default class ParserVisitor {
     private tokenizer: Tokenizer;
     private currentDeclarationID?: string;
     private lastType?: AST.Type;
+    private readonly fileReader: FileReader;
 
-    constructor(tkn: Tokenizer) {
+    constructor(tkn: Tokenizer, fileReader: FileReader = new FileReader([tkn.context])) {
         this.tokenizer = tkn;
+        this.fileReader  = fileReader;
     }
 
     parse(): AST.ASTNode {
@@ -23,7 +24,7 @@ export default class ParserVisitor {
         let imports: AST.ImportStatement[] = [];
         let declarations: AST.Declaration[] = [];
 
-        while(this.tokenizer.top() === "import"){
+        while(this.tokenizer.top() === "import") {
             imports.push(this.parseImportStatement());
         }
         Logger.Log("Done imports");
@@ -43,7 +44,10 @@ export default class ParserVisitor {
         this.tokenizer.popAndCheck("as");
         let id = this.parseIdentifier();
         this.optionalSemiColon();
-        return new AST.ImportStatement(filePath, id, dirname(this.tokenizer.context));
+
+        let result = new AST.ImportStatement(filePath, id);
+        result.parseImportFile(this.tokenizer.context, this.fileReader);
+        return result;
     }
 
     parseDeclaration(): AST.Declaration {

@@ -3,22 +3,25 @@ import Logger from "./Logger";
 
 export default class FileReader {
 
-    private static openFiles: string[] = [];
+    public readonly openedFiles: string[];
 
-    public static ReadProgram(filePath: string): string {
-        if (!this.openFiles.includes(filePath)) {
-            this.openFiles.push(filePath);
+    constructor(filesAlreadyOpened: string[] = []) {
+        this.openedFiles = filesAlreadyOpened.slice();
+    }
+
+    public ReadProgram(filePath: string): string {
+        if (!this.openedFiles.includes(filePath)) {
+            this.openedFiles.push(filePath);
             try {
                 return fs.readFileSync(filePath).toString('utf-8');
             } catch(err) {
-                Logger.Log(`Circular dependency ${filePath} detected`);
+                Logger.Log(`Unable to load source: ${filePath}`);
                 throw err;
             }
         } else {
-            const message = `Unable to load source: ${filePath}`;
+            const message = `Circular dependency ${filePath} detected`;
             Logger.Log(message);
             throw new Error(message);
         }
     }
-
 }
