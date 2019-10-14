@@ -39,5 +39,9 @@
     "ts-node-register": "^1.0.0",
     "typescript": "^3.6.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/fs-extra": "^8.0.0",
+    "fs-extra": "^8.1.0",
+    "yargs": "^14.2.0"
+  }
 }

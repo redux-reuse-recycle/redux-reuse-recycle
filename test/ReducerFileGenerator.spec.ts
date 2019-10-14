@@ -5,6 +5,13 @@ import ReducerFileGenerator from "../src/codegen/generators/ReducerFileGenerator
 import ReducerNode from "../src/codegen/ir/ReducerNode";
 import FileCreator from '../src/utils/FileCreator';
 
+const defaultConfig = {
+    defaultFile: '',
+    actionDirector: 'actions',
+    serviceDirectory: 'services',
+    reducerDirectory: 'reducers',
+};
+
 describe("ReducerFileGenerator",  () => {
     it("Produces the correct output for a few reducers", () => {
         let node = new ReducerNode('users');
@@ -56,8 +63,8 @@ describe("ReducerFileGenerator",  () => {
                 },
             ],
         });
-        let code = new ReducerFileGenerator(node).codeGen();
-        FileCreator(code, './reducer.js');
+        let code = new ReducerFileGenerator(node, defaultConfig).codeGen();
+        FileCreator(code, defaultConfig.actionDirector, 'reducers');
         expect(code).to.equal('import {\n' +
             '\tSET_USERS_BEEN_FETCHED,\n' +
             '\tGET_ALL_USERS_REQUEST,\n' +
@@ -78,7 +85,7 @@ describe("ReducerFileGenerator",  () => {
             '\t},\n' +
             '};\n' +
             '\n' +
-            'export default function counterReducer(state = initialState, action = {}) {\n' +
+            'export default function usersReducer(state = initialState, action = {}) {\n' +
             '\tswitch(action.type) {\n' +
             '\t\tcase SET_USERS_BEEN_FETCHED:\n' +
             '\t\t\treturn {\n' +
@@ -93,11 +100,27 @@ describe("ReducerFileGenerator",  () => {
             '\t\t\t\t\terror: null,\n' +
             '\t\t\t\t},\n' +
             '\t\t\t};\n' +
+            '\t\tcase GET_ALL_USERS_ERROR:\n' +
+            '\t\t\treturn {\n' +
+            '\t\t\t\t...state,\n' +
+            '\t\t\t\tmeta: {\n' +
+            '\t\t\t\t\tloading: false,\n' +
+            '\t\t\t\t\terror: action.error,\n' +
+            '\t\t\t\t},\n' +
+            '\t\t\t};\n' +
             '\t\tcase GET_ALL_USERS_SUCCESS:\n' +
             '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\tusers1: action.payload ? action.payload : state.users1,\n' +
+            '\t\t\t\tmeta: {\n' +
+            '\t\t\t\t\tloading: false,\n' +
+            '\t\t\t\t\terror: null,\n' +
+            '\t\t\t\t},\n' +
             '\t\t\t\tusers2: action.payload ? action.payload : state.users2,\n' +
+            '\t\t\t\tmeta: {\n' +
+            '\t\t\t\t\tloading: false,\n' +
+            '\t\t\t\t\terror: null,\n' +
+            '\t\t\t\t},\n' +
             '\t\t\t};\n' +
             '\t\tcase DELETE_ALL_USERS_REQUEST:\n' +
             '\t\t\treturn {\n' +
@@ -107,11 +130,27 @@ describe("ReducerFileGenerator",  () => {
             '\t\t\t\t\terror: null,\n' +
             '\t\t\t\t},\n' +
             '\t\t\t};\n' +
+            '\t\tcase DELETE_ALL_USERS_ERROR:\n' +
+            '\t\t\treturn {\n' +
+            '\t\t\t\t...state,\n' +
+            '\t\t\t\tmeta: {\n' +
+            '\t\t\t\t\tloading: false,\n' +
+            '\t\t\t\t\terror: action.error,\n' +
+            '\t\t\t\t},\n' +
+            '\t\t\t};\n' +
             '\t\tcase DELETE_ALL_USERS_SUCCESS:\n' +
             '\t\t\treturn {\n' +
             '\t\t\t\t...state,\n' +
             '\t\t\t\tusers1: action.payload ? action.payload : state.users1,\n' +
+            '\t\t\t\tmeta: {\n' +
+            '\t\t\t\t\tloading: false,\n' +
+            '\t\t\t\t\terror: null,\n' +
+            '\t\t\t\t},\n' +
             '\t\t\t\tusers2: action.payload ? action.payload : state.users2,\n' +
+            '\t\t\t\tmeta: {\n' +
+            '\t\t\t\t\tloading: false,\n' +
+            '\t\t\t\t\terror: null,\n' +
+            '\t\t\t\t},\n' +
             '\t\t\t};\n' +
             '\t\tdefault:\n' +
             '\t\t\treturn state;\n' +

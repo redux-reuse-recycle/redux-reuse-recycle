@@ -1,13 +1,16 @@
 import AbstractFileGenerator from "./AbstractFileGenerator";
 import ActionsNode from '../ir/ActionsNode';
 import ActionInterface from "../interfaces/ActionInterface";
+import { ConfigInterface } from '../../Main';
 
 class ActionFileGenerator extends AbstractFileGenerator {
     private actionNode: ActionsNode;
+    private config: ConfigInterface;
 
-    constructor(actionNode: ActionsNode) {
+    constructor(actionNode: ActionsNode, config: ConfigInterface) {
         super();
         this.actionNode = actionNode;
+        this.config = config;
     }
 
     private generateImports(): string {
@@ -16,7 +19,7 @@ class ActionFileGenerator extends AbstractFileGenerator {
         this.actionNode.actions.forEach((action: ActionInterface) => {
             if (action.actionClass === "network" && !importedServices.includes(action.actionClass)) {
                 importedServices.push(action.actionClass);
-                imports += `import * as ${action.actionClass}Service from "../services/${action.actionClass}.js";\n`
+                imports += `import * as ${action.actionClass}Service from "../${this.config.serviceDirectory}/${this.actionNode.name}.js";\n`
             }
         });
         return imports += '\n';
@@ -26,11 +29,11 @@ class ActionFileGenerator extends AbstractFileGenerator {
         let constants: string = '';
         this.actionNode.actions.forEach((action: ActionInterface) => {
             if (action.actionClass === "network") {
-                constants += `const ${action.type}_REQUEST = "${action.type}_REQUEST";\n`;
-                constants += `const ${action.type}_ERROR = "${action.type}_ERROR";\n`;
-                constants += `const ${action.type}_SUCCESS = "${action.type}_SUCCESS";\n`;
+                constants += `export const ${action.type}_REQUEST = "${action.type}_REQUEST";\n`;
+                constants += `export const ${action.type}_ERROR = "${action.type}_ERROR";\n`;
+                constants += `export const ${action.type}_SUCCESS = "${action.type}_SUCCESS";\n`;
             } else {
-                constants += `const ${action.type} = "${action.type}";\n`;
+                constants += `export const ${action.type} = "${action.type}";\n`;
             }
         });
         return constants;
@@ -53,7 +56,7 @@ class ActionFileGenerator extends AbstractFileGenerator {
         let functions: string = '';
         this.actionNode.actions.forEach((action: ActionInterface) => {
             if (action.actionClass === "network" ) {
-                functions += `const ${this.formatFunctionName(action.type)} = (payload) => {\n`;
+                functions += `export const ${this.formatFunctionName(action.type)} = (payload) => {\n`;
                 functions += `\tconst request = ${action.actionClass}Service.${this.formatFunctionName(action.type)}(payload);\n\n`;
                 functions += `\treturn (dispatch) => {\n`;
                 functions += `\t\tdispatch({ type: ${action.type}_REQUEST });\n\n`;
@@ -67,7 +70,7 @@ class ActionFileGenerator extends AbstractFileGenerator {
                 functions += `\t}\n`;
                 functions += `};\n\n`;
             } else {
-                functions += `const ${this.formatFunctionName(action.type)} = (payload) => ({\n`;
+                functions += `export const ${this.formatFunctionName(action.type)} = (payload) => ({\n`;
                 functions += `\ttype: ${action.type},\n` + '\tpayload\n' + '});\n\n';
             }
         });
