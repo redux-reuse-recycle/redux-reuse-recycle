@@ -2,13 +2,16 @@ import AbstractFileGenerator from "./AbstractFileGenerator";
 import ReducerNode from '../ir/ReducerNode';
 import ReducerVariableInterface from '../interfaces/ReducerVariableInterface';
 import ActionInterface from "../interfaces/ActionInterface";
+import { ConfigInterface } from '../../Main';
 
 class ReducerFileGenerator extends AbstractFileGenerator {
     private reducerNode: ReducerNode;
+    private config: ConfigInterface;
 
-    constructor(reducerNode: ReducerNode) {
+    constructor(reducerNode: ReducerNode, config: ConfigInterface) {
         super();
         this.reducerNode = reducerNode;
+        this.config = config;
     }
 
     private generateActionImports(): string {
@@ -44,9 +47,9 @@ class ReducerFileGenerator extends AbstractFileGenerator {
                 actionImportNodes[actionNode].forEach((action: string) => {
                     actionImports += `\t${action},\n`;
                 });
-                actionImports += `} from "../actions/${actionNode}.js";\n`;
+                actionImports += `} from "../${this.config.actionDirector}/${actionNode}.js";\n`;
             } else {
-                actionImports += `import { ${actionImportNodes[actionNode][0]} } from "../actions/${actionNode}.js";\n`
+                actionImports += `import { ${actionImportNodes[actionNode][0]} } from "../${this.config.actionDirector}/${actionNode}.js";\n`
             }
         });
         return actionImports;
@@ -57,7 +60,7 @@ class ReducerFileGenerator extends AbstractFileGenerator {
         let includeMeta: boolean = false;
         let initialState: string = "const initialState = {\n";
         this.reducerNode.variables.forEach((variable: ReducerVariableInterface) => {
-            initialState += `\t${variable.variableName}: ${variable.initialValue},\n`;
+            initialState += `\t${variable.variableName}: ${variable.initialValue || 'null'},\n`;
             variable.modifiedBy.forEach((action: ActionInterface) => {
                if (action.actionClass === 'network') includeMeta = true;
             });
@@ -77,8 +80,9 @@ class ReducerFileGenerator extends AbstractFileGenerator {
             case 'network_request':
                 return `{\n\t\t\t\t\tloading: true,\n\t\t\t\t\terror: null,\n\t\t\t\t}`;
             case 'network_error':
-                return `{\n\t\t\t\t\tloading: false,\n\t\t\t\t\terror,\n\t\t\t\t}`;
+                return `{\n\t\t\t\t\tloading: false,\n\t\t\t\t\terror: action.error,\n\t\t\t\t}`;
             case 'network_success':
+                if (variableName === "meta") return `{\n\t\t\t\t\tloading: false,\n\t\t\t\t\terror: null,\n\t\t\t\t}`;
                 return `action.payload ? action.payload : state.${variableName}`;
             case 'toggle':
                 return `typeof action.payload === 'boolean' ? action.payload : !state.${variableName}`;
@@ -92,7 +96,7 @@ class ReducerFileGenerator extends AbstractFileGenerator {
     }
 
     private generateReducer(): string {
-        let reducer = `export default function counterReducer(state = initialState, action = {}) {\n`;
+        let reducer = `export default function ${this.reducerNode.name.toLowerCase()}Reducer(state = initialState, action = {}) {\n`;
         reducer += "\tswitch(action.type) {\n";
         interface actionVariableInterface { variableName: string; actionClass: string; };
         interface actionVariableMapInterface {[type: string]: actionVariableInterface[]};
@@ -107,7 +111,7 @@ class ReducerFileGenerator extends AbstractFileGenerator {
                             actionClass: action.actionClass + "_request",
                         }];
                     }
-                    if (actionVariableMap[action.type + "_ERROR"]) {
+                    if (!actionVariableMap[action.type + "_ERROR"]) {
                         actionVariableMap[action.type + "_ERROR"] = [{
                             variableName: "meta",
                             actionClass: action.actionClass + "_error",
@@ -118,9 +122,16 @@ class ReducerFileGenerator extends AbstractFileGenerator {
                             variableName: variable.variableName,
                             actionClass: action.actionClass + "_success",
                         });
+                        actionVariableMap[action.type + "_SUCCESS"].push({
+                            variableName: "meta",
+                            actionClass: action.actionClass + "_success",
+                        });
                     } else {
                         actionVariableMap[action.type + "_SUCCESS"] = [{
                             variableName: variable.variableName,
+                            actionClass: action.actionClass + "_success",
+                        }, {
+                            variableName: "meta",
                             actionClass: action.actionClass + "_success",
                         }]
                     }

@@ -3,14 +3,22 @@ import { expect } from "chai";
 
 import ServiceFileGenerator from "../src/codegen/generators/ServiceFileGenerator";
 import ServiceNode from "../src/codegen/ir/ServiceNode";
+import FileCreator from "../src/utils/FileCreator";
 
-describe("ActionFileGenerator",  () => {
+const defaultConfig = {
+    defaultFile: '',
+    actionDirector: 'actions',
+    serviceDirectory: 'services',
+    reducerDirectory: 'reducers',
+};
+
+describe("ServiceFileGenerator",  () => {
     it("Produces the correct output for three actions", () => {
         let node = new ServiceNode('users');
         node.addServiceCase({type: 'GET_ALL_USERS', method: "GET", url: '/api/users'});
         node.addServiceCase({type: 'UPDATE_ALL_USERS', method: "POST", url: '/api/users'});
-        let code = new ServiceFileGenerator(node).codeGen();
-        // FileCreator(code, './service.js')
+        let code = new ServiceFileGenerator(node, defaultConfig).codeGen();
+        FileCreator(code, defaultConfig.actionDirector, 'services');
         expect(code).to.equal('export const getAllUsers = () => {\n' +
             '\tconst url = "/api/users";\n' +
             '\n' +

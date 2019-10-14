@@ -1,13 +1,16 @@
 import AbstractFileGenerator from "./AbstractFileGenerator";
 import ServiceCaseInterface from "../interfaces/ServiceCaseInterface";
 import ServiceNode from "../ir/ServiceNode";
+import { ConfigInterface } from '../../Main';
 
 class ServiceFileGenerator extends AbstractFileGenerator {
     private serviceNode: ServiceNode;
+    private config: ConfigInterface;
 
-    constructor(serviceNode: ServiceNode) {
+    constructor(serviceNode: ServiceNode, config: ConfigInterface) {
         super();
         this.serviceNode = serviceNode;
+        this.config = config;
     }
 
     private formatFunctionName(type: string): string {

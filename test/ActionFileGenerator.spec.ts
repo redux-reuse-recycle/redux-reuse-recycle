@@ -5,23 +5,30 @@ import ActionFileGenerator from "../src/codegen/generators/ActionFileGenerator";
 import ActionsNode from "../src/codegen/ir/ActionsNode";
 import FileCreator from '../src/utils/FileCreator';
 
+const defaultConfig = {
+    defaultFile: '',
+    actionDirector: 'actions',
+    serviceDirectory: 'services',
+    reducerDirectory: 'reducers',
+};
+
 describe("ActionFileGenerator",  () => {
     it("Produces the correct output for three actions", () => {
         let node = new ActionsNode('users');
         node.addAction({type: 'GET_ALL_USERS', actionNode: 'users', actionClass: "network", hasPayload: false});
         node.addAction({type: 'OPEN_MODAL', actionNode: 'users', actionClass: "toggle", hasPayload: false});
         node.addAction({type: 'SET_USER_LOGGED_IN', actionNode: 'users', actionClass: "toggle", hasPayload: false});
-        let code = new ActionFileGenerator(node).codeGen();
-        FileCreator(code, './actions.js');
-        expect(code).to.equal('import * as networkService from "../services/network.js";\n' +
+        let code = new ActionFileGenerator(node, defaultConfig).codeGen();
+        FileCreator(code, defaultConfig.actionDirector, 'actions');
+        expect(code).to.equal('import * as networkService from "../services/users.js";\n' +
             '\n' +
-            'const GET_ALL_USERS_REQUEST = "GET_ALL_USERS_REQUEST";\n' +
-            'const GET_ALL_USERS_ERROR = "GET_ALL_USERS_ERROR";\n' +
-            'const GET_ALL_USERS_SUCCESS = "GET_ALL_USERS_SUCCESS";\n' +
-            'const OPEN_MODAL = "OPEN_MODAL";\n' +
-            'const SET_USER_LOGGED_IN = "SET_USER_LOGGED_IN";\n' +
+            'export const GET_ALL_USERS_REQUEST = "GET_ALL_USERS_REQUEST";\n' +
+            'export const GET_ALL_USERS_ERROR = "GET_ALL_USERS_ERROR";\n' +
+            'export const GET_ALL_USERS_SUCCESS = "GET_ALL_USERS_SUCCESS";\n' +
+            'export const OPEN_MODAL = "OPEN_MODAL";\n' +
+            'export const SET_USER_LOGGED_IN = "SET_USER_LOGGED_IN";\n' +
             '\n' +
-            'const getAllUsers = (payload) => {\n' +
+            'export const getAllUsers = (payload) => {\n' +
             '\tconst request = networkService.getAllUsers(payload);\n' +
             '\n' +
             '\treturn (dispatch) => {\n' +
@@ -37,12 +44,12 @@ describe("ActionFileGenerator",  () => {
             '\t}\n' +
             '};\n' +
             '\n' +
-            'const openModal = (payload) => ({\n' +
+            'export const openModal = (payload) => ({\n' +
             '\ttype: OPEN_MODAL,\n' +
             '\tpayload\n' +
             '});\n' +
             '\n' +
-            'const setUserLoggedIn = (payload) => ({\n' +
+            'export const setUserLoggedIn = (payload) => ({\n' +
             '\ttype: SET_USER_LOGGED_IN,\n' +
             '\tpayload\n' +
             '});\n' +
@@ -51,12 +58,11 @@ describe("ActionFileGenerator",  () => {
     it("Produces the correct output for one actions", () => {
         let node = new ActionsNode('users');
         node.addAction({type: 'GET_ALL_USERS', actionClass: "toggle", actionNode: 'users', hasPayload: false});
-        let code = new ActionFileGenerator(node).codeGen();
-        // FileCreator(code, './actions.js');
+        let code = new ActionFileGenerator(node, defaultConfig).codeGen();
         expect(code).to.equal('\n' +
-            'const GET_ALL_USERS = "GET_ALL_USERS";\n' +
+            'export const GET_ALL_USERS = "GET_ALL_USERS";\n' +
             '\n' +
-            'const getAllUsers = (payload) => ({\n' +
+            'export const getAllUsers = (payload) => ({\n' +
             '\ttype: GET_ALL_USERS,\n' +
             '\tpayload\n' +
             '});\n' +
